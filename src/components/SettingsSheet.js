@@ -11,6 +11,7 @@ export const SettingsSheet = ({
   monthlyRates,
   daysInMonth,
   cleaningPerWeek,
+  syncStatus,
   onChangeMealMode,
   onChangeMonthlyRate,
   onChangeCleaningPerWeek,
@@ -89,6 +90,15 @@ export const SettingsSheet = ({
               theme={theme}
               compact
             />
+
+            <View style={[styles.syncFooter, { borderTopColor: theme.separator }]}>
+              <View style={[styles.syncDot, { 
+                backgroundColor: syncStatus === 'synced' ? '#10B981' : syncStatus === 'syncing' ? '#F59E0B' : '#EF4444' 
+              }]} />
+              <Text style={[styles.syncText, { color: theme.textMuted, fontFamily }]}>
+                {syncStatus === 'synced' ? 'Cloud Synced' : syncStatus === 'syncing' ? 'Syncing...' : 'Sync Error'}
+              </Text>
+            </View>
           </ScrollView>
         </Pressable>
       </Pressable>
@@ -173,5 +183,24 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 6,
     marginLeft: 4,
+  },
+  syncFooter: {
+    marginTop: 32,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  syncDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  syncText: {
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 0.2,
   },
 });

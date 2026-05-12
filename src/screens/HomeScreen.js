@@ -188,6 +188,7 @@ export const HomeScreen = ({ theme }) => {
         monthlyRates={monthlyRates}
         daysInMonth={dim}
         cleaningPerWeek={cleaningPerWeek}
+        syncStatus={useApp().syncStatus}
         onChangeMealMode={updateMealMode}
         onChangeMonthlyRate={updateMonthlyRate}
         onChangeCleaningPerWeek={updateCleaningPerWeek}

@@ -22,6 +22,7 @@ export const AppProvider = ({ children }) => {
   const [monthlyRates, setMonthlyRates] = useState(DEFAULTS.monthlyRates);
   const [mealMode, setMealMode] = useState(DEFAULTS.mealMode);
   const [cleaningPerWeek, setCleaningPerWeek] = useState(DEFAULTS.cleaningPerWeek);
+  const [syncStatus, setSyncStatus] = useState('synced'); // 'synced' | 'syncing' | 'error'
   
   const isInitialMount = useRef(true);
 
@@ -74,40 +75,49 @@ export const AppProvider = ({ children }) => {
   }, [ready]);
 
   const toggle = useCallback((dateKey, field) => {
-    setAttendance((prev) => {
-      const current = prev[dateKey] || emptyDay;
-      const nextDay = { ...current, [field]: !current[field] };
-      const dayIsEmpty = !nextDay.lunch && !nextDay.dinner && !nextDay.cleaning;
-      const next = { ...prev };
-      if (dayIsEmpty) delete next[dateKey];
-      else next[dateKey] = nextDay;
-      
-      saveAttendance(next);
-      firebaseService.saveUserData(SHARED_USER_ID, { attendance: next });
-      return next;
-    });
-  }, []);
+    const current = attendance[dateKey] || emptyDay;
+    const nextDay = { ...current, [field]: !current[field] };
+    const dayIsEmpty = !nextDay.lunch && !nextDay.dinner && !nextDay.cleaning;
+    
+    const next = { ...attendance };
+    if (dayIsEmpty) delete next[dateKey];
+    else next[dateKey] = nextDay;
+    
+    setAttendance(next);
+    saveAttendance(next);
+    setSyncStatus('syncing');
+    firebaseService.saveUserData(SHARED_USER_ID, { attendance: next })
+      .then(() => setSyncStatus('synced'))
+      .catch(() => setSyncStatus('error'));
+  }, [attendance]);
 
   const updateMonthlyRate = useCallback((field, value) => {
-    setMonthlyRates((prev) => {
-      const next = { ...prev, [field]: value };
-      saveMonthlyRates(next);
-      firebaseService.saveUserData(SHARED_USER_ID, { monthlyRates: next });
-      return next;
-    });
-  }, []);
+    const next = { ...monthlyRates, [field]: value };
+    setMonthlyRates(next);
+    saveMonthlyRates(next);
+    setSyncStatus('syncing');
+    firebaseService.saveUserData(SHARED_USER_ID, { monthlyRates: next })
+      .then(() => setSyncStatus('synced'))
+      .catch(() => setSyncStatus('error'));
+  }, [monthlyRates]);
 
   const updateMealMode = useCallback((mode) => {
     setMealMode(mode);
     saveMealMode(mode);
-    firebaseService.saveUserData(SHARED_USER_ID, { mealMode: mode });
+    setSyncStatus('syncing');
+    firebaseService.saveUserData(SHARED_USER_ID, { mealMode: mode })
+      .then(() => setSyncStatus('synced'))
+      .catch(() => setSyncStatus('error'));
   }, []);
 
   const updateCleaningPerWeek = useCallback((n) => {
     const clamped = Math.max(1, Math.min(7, Math.round(n)));
     setCleaningPerWeek(clamped);
     saveCleaningPerWeek(clamped);
-    firebaseService.saveUserData(SHARED_USER_ID, { cleaningPerWeek: clamped });
+    setSyncStatus('syncing');
+    firebaseService.saveUserData(SHARED_USER_ID, { cleaningPerWeek: clamped })
+      .then(() => setSyncStatus('synced'))
+      .catch(() => setSyncStatus('error'));
   }, []);
 
   const value = useMemo(
@@ -118,6 +128,7 @@ export const AppProvider = ({ children }) => {
       monthlyRates,
       mealMode,
       cleaningPerWeek,
+      syncStatus,
       toggle,
       updateMonthlyRate,
       updateMealMode,
@@ -130,6 +141,7 @@ export const AppProvider = ({ children }) => {
       monthlyRates,
       mealMode,
       cleaningPerWeek,
+      syncStatus,
       toggle,
       updateMonthlyRate,
       updateMealMode,
