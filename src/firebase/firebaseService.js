@@ -38,13 +38,16 @@ export const firebaseService = {
   /**
    * Subscribes to user data changes.
    */
-  subscribeToUserData(userId, callback) {
+  subscribeToUserData(userId, callback, onError) {
     if (!userId) return () => {};
     const userRef = doc(db, COLLECTION, userId);
     return onSnapshot(userRef, (doc) => {
       if (doc.exists()) {
         callback(doc.data());
       }
+    }, (error) => {
+      console.error('Firestore subscription error:', error);
+      if (onError) onError(error);
     });
   }
 };

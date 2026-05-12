@@ -59,20 +59,26 @@ export const AppProvider = ({ children }) => {
 
   // 2. Subscribe to shared Firestore data
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || !user) return;
 
-    const unsubscribe = firebaseService.subscribeToUserData(SHARED_USER_ID, (data) => {
-      if (data) {
-        // Only update if data exists to avoid overwriting with empty
-        if (data.attendance) setAttendance(data.attendance);
-        if (data.monthlyRates) setMonthlyRates(data.monthlyRates);
-        if (data.mealMode) setMealMode(data.mealMode);
-        if (data.cleaningPerWeek !== undefined) setCleaningPerWeek(data.cleaningPerWeek);
+    const unsubscribe = firebaseService.subscribeToUserData(
+      SHARED_USER_ID, 
+      (data) => {
+        if (data) {
+          if (data.attendance) setAttendance(data.attendance);
+          if (data.monthlyRates) setMonthlyRates(data.monthlyRates);
+          if (data.mealMode) setMealMode(data.mealMode);
+          if (data.cleaningPerWeek !== undefined) setCleaningPerWeek(data.cleaningPerWeek);
+          setSyncStatus('synced');
+        }
+      },
+      (err) => {
+        setSyncStatus('error');
       }
-    });
+    );
 
     return unsubscribe;
-  }, [ready]);
+  }, [ready, user]);
 
   const toggle = useCallback((dateKey, field) => {
     const current = attendance[dateKey] || emptyDay;
