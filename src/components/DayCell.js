@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { DayPill } from './DayPill';
+import { GlassCard } from './GlassCard';
 
 export const DayCell = ({ day, entry, isToday, mealMode, theme, onToggle, onPress, compact }) => {
   if (!day) {
@@ -10,16 +11,6 @@ export const DayCell = ({ day, entry, isToday, mealMode, theme, onToggle, onPres
   const showDinner = mealMode !== 'lunch';
   const e = entry || { lunch: false, dinner: false, cleaning: false };
 
-  const innerStyle = [
-    styles.inner,
-    {
-      backgroundColor: theme.surface,
-      borderColor: theme.border,
-    },
-    compact && styles.innerCompact,
-    isToday && { borderColor: theme.today, borderWidth: 1.5 },
-  ];
-
   const dotForCompact = (active, color) => (
     <View
       style={[
@@ -27,6 +18,7 @@ export const DayCell = ({ day, entry, isToday, mealMode, theme, onToggle, onPres
         {
           backgroundColor: active ? color : 'transparent',
           borderColor: active ? color : theme.borderStrong,
+          ...(active && { boxShadow: `0 0 6px ${color}` }),
         },
       ]}
     />
@@ -35,24 +27,35 @@ export const DayCell = ({ day, entry, isToday, mealMode, theme, onToggle, onPres
   if (compact) {
     return (
       <View style={[styles.slot, styles.slotCompact]}>
-        <Pressable
-          onPress={onPress}
-          style={({ pressed }) => [innerStyle, { opacity: pressed ? 0.7 : 1 }]}
-        >
-          <Text
-            style={[
-              styles.dayNumberCompact,
-              { color: isToday ? theme.today : theme.text, fontFamily: theme.font },
-              isToday && { fontWeight: '600' },
-            ]}
-          >
-            {day}
-          </Text>
-          <View style={styles.indicators}>
-            {showLunch && dotForCompact(e.lunch, theme.lunch)}
-            {showDinner && dotForCompact(e.dinner, theme.dinner)}
-            {dotForCompact(e.cleaning, theme.cleaning)}
-          </View>
+        <Pressable onPress={onPress}>
+          {({ pressed, hovered }) => (
+            <GlassCard
+              theme={theme}
+              radius={12}
+              style={[
+                styles.innerCompact,
+                { backgroundColor: isToday ? 'rgba(99, 102, 241, 0.15)' : theme.surface },
+                isToday && { borderColor: theme.today, borderWidth: 1.5 },
+                hovered && { backgroundColor: theme.surfaceHover },
+                pressed && { transform: [{ scale: 0.96 }] },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.dayNumberCompact,
+                  { color: isToday ? theme.today : theme.text, fontFamily: theme.font },
+                  isToday && { fontWeight: '700' },
+                ]}
+              >
+                {day}
+              </Text>
+              <View style={styles.indicators}>
+                {showLunch && dotForCompact(e.lunch, theme.lunch)}
+                {showDinner && dotForCompact(e.dinner, theme.dinner)}
+                {dotForCompact(e.cleaning, theme.cleaning)}
+              </View>
+            </GlassCard>
+          )}
         </Pressable>
       </View>
     );
@@ -60,12 +63,20 @@ export const DayCell = ({ day, entry, isToday, mealMode, theme, onToggle, onPres
 
   return (
     <View style={styles.slot}>
-      <View style={innerStyle}>
+      <GlassCard
+        theme={theme}
+        radius={16}
+        style={[
+          styles.inner,
+          isToday && { borderColor: theme.today, borderWidth: 2 },
+          { backgroundColor: isToday ? 'rgba(99, 102, 241, 0.1)' : theme.surface },
+        ]}
+      >
         <Text
           style={[
             styles.dayNumber,
             { color: isToday ? theme.today : theme.text, fontFamily: theme.font },
-            isToday && { fontWeight: '600' },
+            isToday && { fontWeight: '700' },
           ]}
         >
           {day}
@@ -76,7 +87,6 @@ export const DayCell = ({ day, entry, isToday, mealMode, theme, onToggle, onPres
               label="Lunch"
               color={theme.lunch}
               softColor={theme.lunchSoft}
-              edgeColor={theme.lunchEdge}
               active={e.lunch}
               onPress={() => onToggle('lunch')}
               theme={theme}
@@ -87,7 +97,6 @@ export const DayCell = ({ day, entry, isToday, mealMode, theme, onToggle, onPres
               label="Dinner"
               color={theme.dinner}
               softColor={theme.dinnerSoft}
-              edgeColor={theme.dinnerEdge}
               active={e.dinner}
               onPress={() => onToggle('dinner')}
               theme={theme}
@@ -97,13 +106,12 @@ export const DayCell = ({ day, entry, isToday, mealMode, theme, onToggle, onPres
             label="Clean"
             color={theme.cleaning}
             softColor={theme.cleaningSoft}
-            edgeColor={theme.cleaningEdge}
             active={e.cleaning}
             onPress={() => onToggle('cleaning')}
             theme={theme}
           />
         </View>
-      </View>
+      </GlassCard>
     </View>
   );
 };
@@ -111,46 +119,43 @@ export const DayCell = ({ day, entry, isToday, mealMode, theme, onToggle, onPres
 const styles = StyleSheet.create({
   slot: {
     width: `${100 / 7}%`,
-    padding: 3,
+    padding: 4,
   },
   slotCompact: {
-    padding: 2,
+    padding: 3,
   },
   inner: {
-    borderRadius: 8,
-    borderWidth: 1,
-    padding: 8,
-    minHeight: 108,
+    padding: 10,
+    minHeight: 115,
   },
   innerCompact: {
-    minHeight: 50,
-    padding: 5,
-    borderRadius: 6,
+    minHeight: 52,
+    padding: 6,
     justifyContent: 'space-between',
   },
   dayNumber: {
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: 13,
+    fontWeight: '600',
     letterSpacing: -0.2,
-    marginBottom: 6,
+    marginBottom: 8,
   },
   dayNumberCompact: {
-    fontSize: 12,
-    fontWeight: '500',
+    fontSize: 13,
+    fontWeight: '600',
   },
   pills: {
-    gap: 4,
+    gap: 6,
   },
   indicators: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 3,
+    marginTop: 4,
   },
   indicator: {
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
     borderWidth: 1,
-    marginRight: 3,
+    marginRight: 4,
   },
 });

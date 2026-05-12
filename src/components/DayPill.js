@@ -1,24 +1,25 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-export const DayPill = ({ label, color, softColor, edgeColor, active, onPress, theme, compact }) => (
+export const DayPill = ({ label, color, softColor, active, onPress, theme, compact }) => (
   <Pressable
     onPress={onPress}
     style={({ pressed, hovered }) => [
       styles.pill,
       compact && styles.pillCompact,
       {
-        backgroundColor: active ? color : softColor,
-        borderColor: active ? color : edgeColor,
+        backgroundColor: active ? color : 'rgba(255,255,255,0.05)',
+        borderColor: active ? color : theme.border,
+        ...(active && { boxShadow: `0 4px 12px ${color}40` }),
       },
-      pressed && { opacity: 0.65 },
-      hovered && !active && { backgroundColor: softColor, borderColor: color },
+      pressed && { transform: [{ scale: 0.95 }] },
+      hovered && !active && { backgroundColor: 'rgba(255,255,255,0.1)' },
     ]}
   >
     <View
       style={[
         styles.dot,
-        compact && { width: 4, height: 4, borderRadius: 2 },
+        compact && { width: 5, height: 5, borderRadius: 2.5 },
         { backgroundColor: active ? '#fff' : color },
       ]}
     />
@@ -40,11 +41,12 @@ const styles = StyleSheet.create({
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
     borderWidth: 1,
     alignSelf: 'flex-start',
+    transition: 'all 0.2s ease',
   },
   pillCompact: {
     paddingHorizontal: 4,
@@ -52,14 +54,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    marginRight: 5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 6,
   },
   label: {
     fontSize: 11,
-    fontWeight: '500',
-    letterSpacing: -0.1,
+    fontWeight: '700',
+    letterSpacing: 0.2,
   },
 });

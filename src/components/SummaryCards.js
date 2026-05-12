@@ -1,28 +1,29 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { GlassCard } from './GlassCard';
 
 const Card = ({ label, value, sublabel, theme, emphasis }) => (
-  <View
+  <GlassCard
+    theme={theme}
+    radius={20}
     style={[
       styles.card,
-      {
-        backgroundColor: theme.surface,
-        borderColor: theme.border,
-        boxShadow: `0 1px 2px ${theme.shadow}`,
-      },
       emphasis && { borderColor: theme.primary, borderWidth: 1.5 },
     ]}
   >
     <Text style={[styles.label, { color: theme.textMuted, fontFamily: theme.font }]}>
       {label}
     </Text>
-    <Text style={[styles.value, { color: theme.text, fontFamily: theme.font }]}>
-      ₹{Math.round(value).toLocaleString('en-IN')}
-    </Text>
+    <View style={styles.valueRow}>
+      <Text style={[styles.currency, { color: theme.textMuted }]}>₹</Text>
+      <Text style={[styles.value, { color: theme.text, fontFamily: theme.font }]}>
+        {Math.round(value).toLocaleString('en-IN')}
+      </Text>
+    </View>
     <Text style={[styles.sublabel, { color: theme.textSubtle, fontFamily: theme.font }]}>
       {sublabel}
     </Text>
-  </View>
+  </GlassCard>
 );
 
 export const SummaryCards = ({ summary, mealMode, monthName, theme, compact }) => {
@@ -60,34 +61,42 @@ export const SummaryCards = ({ summary, mealMode, monthName, theme, compact }) =
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 12,
   },
   rowCompact: {
     flexDirection: 'column',
-    gap: 6,
+    gap: 10,
   },
   card: {
     flex: 1,
-    borderRadius: 8,
-    borderWidth: 1,
-    padding: 14,
-    elevation: 2,
+    padding: 16,
   },
   label: {
-    fontSize: 11,
-    fontWeight: '500',
+    fontSize: 10,
+    fontWeight: '700',
     textTransform: 'uppercase',
-    letterSpacing: 0.4,
+    letterSpacing: 1,
+  },
+  valueRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    marginTop: 8,
+    gap: 2,
+  },
+  currency: {
+    fontSize: 14,
+    fontWeight: '600',
+    opacity: 0.6,
   },
   value: {
-    fontSize: 22,
-    fontWeight: '600',
-    marginTop: 6,
-    letterSpacing: -0.5,
+    fontSize: 24,
+    fontWeight: '700',
+    letterSpacing: -0.8,
   },
   sublabel: {
     fontSize: 11,
-    marginTop: 3,
-    fontWeight: '400',
+    marginTop: 4,
+    fontWeight: '500',
+    opacity: 0.8,
   },
 });

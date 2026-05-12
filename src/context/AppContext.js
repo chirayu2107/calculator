@@ -12,7 +12,7 @@ import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { firebaseService } from '../firebase/firebaseService';
 
 const AppContext = createContext(null);
-
+const SHARED_USER_ID = 'shared_v1';
 const emptyDay = { lunch: false, dinner: false, cleaning: false };
 
 export const AppProvider = ({ children }) => {
@@ -56,22 +56,22 @@ export const AppProvider = ({ children }) => {
     };
   }, []);
 
-  // 2. Sync to Firebase whenever data changes (debounced or on change)
+  // 2. Subscribe to shared Firestore data
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
-    if (user && ready) {
-      firebaseService.saveUserData(user.uid, {
-        attendance,
-        monthlyRates,
-        mealMode,
-        cleaningPerWeek,
-        lastUpdated: new Date().toISOString(),
-      });
-    }
-  }, [user, ready, attendance, monthlyRates, mealMode, cleaningPerWeek]);
+    if (!ready) return;
+
+    const unsubscribe = firebaseService.subscribeToUserData(SHARED_USER_ID, (data) => {
+      if (data) {
+        // Only update if data exists to avoid overwriting with empty
+        if (data.attendance) setAttendance(data.attendance);
+        if (data.monthlyRates) setMonthlyRates(data.monthlyRates);
+        if (data.mealMode) setMealMode(data.mealMode);
+        if (data.cleaningPerWeek !== undefined) setCleaningPerWeek(data.cleaningPerWeek);
+      }
+    });
+
+    return unsubscribe;
+  }, [ready]);
 
   const toggle = useCallback((dateKey, field) => {
     setAttendance((prev) => {
@@ -81,7 +81,9 @@ export const AppProvider = ({ children }) => {
       const next = { ...prev };
       if (dayIsEmpty) delete next[dateKey];
       else next[dateKey] = nextDay;
+      
       saveAttendance(next);
+      firebaseService.saveUserData(SHARED_USER_ID, { attendance: next });
       return next;
     });
   }, []);
@@ -90,6 +92,7 @@ export const AppProvider = ({ children }) => {
     setMonthlyRates((prev) => {
       const next = { ...prev, [field]: value };
       saveMonthlyRates(next);
+      firebaseService.saveUserData(SHARED_USER_ID, { monthlyRates: next });
       return next;
     });
   }, []);
@@ -97,12 +100,14 @@ export const AppProvider = ({ children }) => {
   const updateMealMode = useCallback((mode) => {
     setMealMode(mode);
     saveMealMode(mode);
+    firebaseService.saveUserData(SHARED_USER_ID, { mealMode: mode });
   }, []);
 
   const updateCleaningPerWeek = useCallback((n) => {
     const clamped = Math.max(1, Math.min(7, Math.round(n)));
     setCleaningPerWeek(clamped);
     saveCleaningPerWeek(clamped);
+    firebaseService.saveUserData(SHARED_USER_ID, { cleaningPerWeek: clamped });
   }, []);
 
   const value = useMemo(

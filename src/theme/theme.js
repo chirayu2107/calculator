@@ -1,70 +1,57 @@
-// Figma-inspired design system.
-// Clean white panels on a soft canvas, subtle 1px borders,
-// muted neutrals, Figma-blue accent, compact typography.
-
-const fontStack = "-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif";
+const fontStack = "-apple-system, BlinkMacSystemFont, 'Outfit', 'Inter', sans-serif";
 
 export const lightTheme = {
   mode: 'light',
   font: fontStack,
-  bg: '#F5F5F5',                // canvas (Figma editor bg)
-  surface: '#FFFFFF',            // panels / cards
-  surfaceAlt: '#FAFAFA',         // subtle background variant
-  surfaceHover: '#F2F2F2',
-  fieldFill: '#FFFFFF',
-  inputFill: '#FFFFFF',
-  text: '#1E1E1E',
-  textMuted: '#757575',
-  textSubtle: '#A6A6A6',
-  border: '#E6E6E6',
-  borderStrong: '#D6D6D6',
-  separator: '#EAEAEA',
-  primary: '#0D99FF',            // Figma blue
-  primaryHover: '#0A87E0',
-  // accents
-  lunch: '#FFA629',
-  lunchSoft: 'rgba(255, 166, 41, 0.12)',
-  lunchEdge: 'rgba(255, 166, 41, 0.32)',
-  dinner: '#14AE5C',
-  dinnerSoft: 'rgba(20, 174, 92, 0.12)',
-  dinnerEdge: 'rgba(20, 174, 92, 0.32)',
-  cleaning: '#0D99FF',
-  cleaningSoft: 'rgba(13, 153, 255, 0.12)',
-  cleaningEdge: 'rgba(13, 153, 255, 0.32)',
-  today: '#0D99FF',
-  shadow: 'rgba(0, 0, 0, 0.04)',
-  shadowStrong: 'rgba(0, 0, 0, 0.10)',
+  bg: '#F8FAFC',
+  bgMesh: ['#EEF2FF', '#F0F9FF', '#F5F3FF'],
+  surface: 'rgba(255, 255, 255, 0.72)',
+  surfaceAlt: 'rgba(255, 255, 255, 0.4)',
+  surfaceHover: 'rgba(255, 255, 255, 0.9)',
+  text: '#0F172A',
+  textMuted: '#64748B',
+  textSubtle: '#94A3B8',
+  border: 'rgba(255, 255, 255, 0.4)',
+  borderStrong: 'rgba(255, 255, 255, 0.8)',
+  glassBorder: 'rgba(255, 255, 255, 0.5)',
+  primary: '#6366F1',            // Indigo
+  primaryHover: '#4F46E5',
+  lunch: '#F59E0B',              // Amber
+  lunchSoft: 'rgba(245, 158, 11, 0.12)',
+  dinner: '#10B981',             // Emerald
+  dinnerSoft: 'rgba(16, 185, 129, 0.12)',
+  cleaning: '#3B82F6',           // Blue
+  cleaningSoft: 'rgba(59, 130, 246, 0.12)',
+  today: '#6366F1',
+  shadow: 'rgba(0, 0, 0, 0.05)',
+  shadowStrong: 'rgba(0, 0, 0, 0.1)',
 };
 
 export const darkTheme = {
   mode: 'dark',
   font: fontStack,
-  bg: '#1E1E1E',
-  surface: '#2C2C2C',
-  surfaceAlt: '#252525',
-  surfaceHover: '#383838',
-  fieldFill: '#2C2C2C',
-  inputFill: '#383838',
-  text: '#FFFFFF',
-  textMuted: '#B3B3B3',
-  textSubtle: '#7A7A7A',
-  border: '#3D3D3D',
-  borderStrong: '#525252',
-  separator: '#383838',
-  primary: '#0D99FF',
-  primaryHover: '#2BABFF',
-  lunch: '#FFA629',
-  lunchSoft: 'rgba(255, 166, 41, 0.16)',
-  lunchEdge: 'rgba(255, 166, 41, 0.40)',
-  dinner: '#14AE5C',
-  dinnerSoft: 'rgba(20, 174, 92, 0.16)',
-  dinnerEdge: 'rgba(20, 174, 92, 0.40)',
-  cleaning: '#0D99FF',
-  cleaningSoft: 'rgba(13, 153, 255, 0.16)',
-  cleaningEdge: 'rgba(13, 153, 255, 0.40)',
-  today: '#0D99FF',
-  shadow: 'rgba(0, 0, 0, 0.30)',
-  shadowStrong: 'rgba(0, 0, 0, 0.45)',
+  bg: '#0F172A',
+  bgMesh: ['#1E1B4B', '#1E293B', '#111827'],
+  surface: 'rgba(30, 41, 59, 0.6)',
+  surfaceAlt: 'rgba(15, 23, 42, 0.4)',
+  surfaceHover: 'rgba(51, 65, 85, 0.8)',
+  text: '#F8FAFC',
+  textMuted: '#94A3B8',
+  textSubtle: '#64748B',
+  border: 'rgba(255, 255, 255, 0.08)',
+  borderStrong: 'rgba(255, 255, 255, 0.15)',
+  glassBorder: 'rgba(255, 255, 255, 0.1)',
+  primary: '#818CF8',
+  primaryHover: '#6366F1',
+  lunch: '#FBBF24',
+  lunchSoft: 'rgba(251, 191, 36, 0.16)',
+  dinner: '#34D399',
+  dinnerSoft: 'rgba(52, 211, 153, 0.16)',
+  cleaning: '#60A5FA',
+  cleaningSoft: 'rgba(96, 165, 250, 0.16)',
+  today: '#818CF8',
+  shadow: 'rgba(0, 0, 0, 0.2)',
+  shadowStrong: 'rgba(0, 0, 0, 0.4)',
 };
 
 export const getTheme = (scheme) => (scheme === 'dark' ? darkTheme : lightTheme);
