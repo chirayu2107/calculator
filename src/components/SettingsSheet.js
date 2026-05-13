@@ -15,6 +15,7 @@ export const SettingsSheet = ({
   onChangeMealMode,
   onChangeMonthlyRate,
   onChangeCleaningPerWeek,
+  syncId,
   onClose,
 }) => {
   const { isCompact } = useBreakpoint();
@@ -92,12 +93,21 @@ export const SettingsSheet = ({
             />
 
             <View style={[styles.syncFooter, { borderTopColor: theme.separator }]}>
-              <View style={[styles.syncDot, { 
-                backgroundColor: syncStatus === 'synced' ? '#10B981' : syncStatus === 'syncing' ? '#F59E0B' : '#EF4444' 
-              }]} />
-              <Text style={[styles.syncText, { color: theme.textMuted, fontFamily }]}>
-                {syncStatus === 'synced' ? 'Cloud Synced' : syncStatus === 'syncing' ? 'Syncing...' : 'Sync Error'}
-              </Text>
+              <View style={styles.syncInfo}>
+                <View style={[styles.syncDot, { 
+                  backgroundColor: syncStatus === 'synced' ? '#10B981' : syncStatus === 'syncing' ? '#F59E0B' : '#EF4444' 
+                }]} />
+                <Text style={[styles.syncText, { color: theme.textMuted, fontFamily }]}>
+                  {syncStatus === 'synced' ? 'Cloud Synced' : syncStatus === 'syncing' ? 'Syncing...' : 'Sync Error'}
+                </Text>
+              </View>
+              {syncId && (
+                <View style={styles.accountRow}>
+                  <Text style={[styles.syncIdText, { color: theme.textSubtle, fontFamily }]}>
+                    Active Sync: {syncId}
+                  </Text>
+                </View>
+              )}
             </View>
           </ScrollView>
         </Pressable>
@@ -188,10 +198,13 @@ const styles = StyleSheet.create({
     marginTop: 32,
     paddingTop: 16,
     borderTopWidth: 1,
+  },
+  syncInfo: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
+    marginBottom: 12,
   },
   syncDot: {
     width: 6,
@@ -202,5 +215,17 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     letterSpacing: 0.2,
+  },
+  accountRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  syncIdText: {
+    fontSize: 11,
+    opacity: 0.8,
+    textAlign: 'center',
+    width: '100%',
   },
 });

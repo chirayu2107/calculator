@@ -12,7 +12,8 @@ import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { firebaseService } from '../firebase/firebaseService';
 
 const AppContext = createContext(null);
-const SHARED_USER_ID = 'shared_v1';
+const SHARED_USER_ID_DEFAULT = 'shared_v1';
+const SYNC_ID_KEY = '@maidtracker:syncId';
 const emptyDay = { lunch: false, dinner: false, cleaning: false };
 
 export const AppProvider = ({ children }) => {
@@ -22,6 +23,7 @@ export const AppProvider = ({ children }) => {
   const [monthlyRates, setMonthlyRates] = useState(DEFAULTS.monthlyRates);
   const [mealMode, setMealMode] = useState(DEFAULTS.mealMode);
   const [cleaningPerWeek, setCleaningPerWeek] = useState(DEFAULTS.cleaningPerWeek);
+  const [syncId, setSyncId] = useState(null);
   const [syncStatus, setSyncStatus] = useState('synced'); // 'synced' | 'syncing' | 'error'
   
   const isInitialMount = useRef(true);
@@ -31,38 +33,43 @@ export const AppProvider = ({ children }) => {
     let alive = true;
     
     // Load local storage first for immediate UI
-    loadAll().then((data) => {
-      if (!alive) return;
-      setAttendance(data.attendance);
-      setMonthlyRates(data.monthlyRates);
-      setMealMode(data.mealMode);
-      setCleaningPerWeek(data.cleaningPerWeek);
-      setReady(true);
-    });
-
-    // Initialize Auth
-    const unsubscribeAuth = onAuthStateChanged(auth, (u) => {
-      if (u) {
-        setUser(u);
-        // Once authed, we could fetch from Firestore and merge
-        // For simplicity, we'll just start syncing from here
-      } else {
-        signInAnonymously(auth).catch(err => console.error("Auth error:", err));
+    const init = async () => {
+      try {
+        const [data, storedSyncId] = await Promise.all([
+          loadAll(),
+          require('@react-native-async-storage/async-storage').default.getItem(SYNC_ID_KEY)
+        ]);
+        
+        if (!alive) return;
+        setAttendance(data.attendance);
+        setMonthlyRates(data.monthlyRates);
+        setMealMode(data.mealMode);
+        setCleaningPerWeek(data.cleaningPerWeek);
+        if (storedSyncId) setSyncId(storedSyncId);
+        setReady(true);
+      } catch (err) {
+        console.error("Init error:", err);
+        if (alive) setReady(true);
       }
-    });
+    };
+    init();
+
+    // Initialize Auth (Disabled Anonymous Auth to avoid configuration errors)
+    // We now use the custom syncId for data partitioning
+    setReady(true);
+    setUser({ uid: 'guest' });
 
     return () => {
       alive = false;
-      unsubscribeAuth();
     };
   }, []);
 
-  // 2. Subscribe to shared Firestore data
+  // 2. Subscribe to user-specific Firestore data
   useEffect(() => {
-    if (!ready || !user) return;
+    if (!ready || !syncId) return;
 
     const unsubscribe = firebaseService.subscribeToUserData(
-      SHARED_USER_ID, 
+      syncId, 
       (data) => {
         if (data) {
           if (data.attendance) setAttendance(data.attendance);
@@ -78,7 +85,7 @@ export const AppProvider = ({ children }) => {
     );
 
     return unsubscribe;
-  }, [ready, user]);
+  }, [ready, user, syncId]);
 
   const toggle = useCallback((dateKey, field) => {
     const current = attendance[dateKey] || emptyDay;
@@ -91,39 +98,72 @@ export const AppProvider = ({ children }) => {
     
     setAttendance(next);
     saveAttendance(next);
+    if (!syncId) return;
     setSyncStatus('syncing');
-    firebaseService.saveUserData(SHARED_USER_ID, { attendance: next })
+    firebaseService.saveUserData(syncId, { attendance: next })
       .then(() => setSyncStatus('synced'))
       .catch(() => setSyncStatus('error'));
-  }, [attendance]);
+  }, [attendance, syncId]);
 
   const updateMonthlyRate = useCallback((field, value) => {
     const next = { ...monthlyRates, [field]: value };
     setMonthlyRates(next);
     saveMonthlyRates(next);
+    if (!syncId) return;
     setSyncStatus('syncing');
-    firebaseService.saveUserData(SHARED_USER_ID, { monthlyRates: next })
+    firebaseService.saveUserData(syncId, { monthlyRates: next })
       .then(() => setSyncStatus('synced'))
       .catch(() => setSyncStatus('error'));
-  }, [monthlyRates]);
+  }, [monthlyRates, syncId]);
 
   const updateMealMode = useCallback((mode) => {
     setMealMode(mode);
     saveMealMode(mode);
+    if (!syncId) return;
     setSyncStatus('syncing');
-    firebaseService.saveUserData(SHARED_USER_ID, { mealMode: mode })
+    firebaseService.saveUserData(syncId, { mealMode: mode })
       .then(() => setSyncStatus('synced'))
       .catch(() => setSyncStatus('error'));
-  }, []);
+  }, [syncId]);
 
   const updateCleaningPerWeek = useCallback((n) => {
     const clamped = Math.max(1, Math.min(7, Math.round(n)));
     setCleaningPerWeek(clamped);
     saveCleaningPerWeek(clamped);
+    if (!syncId) return;
     setSyncStatus('syncing');
-    firebaseService.saveUserData(SHARED_USER_ID, { cleaningPerWeek: clamped })
+    firebaseService.saveUserData(syncId, { cleaningPerWeek: clamped })
       .then(() => setSyncStatus('synced'))
       .catch(() => setSyncStatus('error'));
+  }, [syncId]);
+
+  const login = useCallback(async (username, pin) => {
+    const id = `${username}_${pin}`.toLowerCase().replace(/\s+/g, '');
+    
+    // 1. Set ID immediately so the UI transitions to Home Screen
+    setSyncId(id);
+    await require('@react-native-async-storage/async-storage').default.setItem(SYNC_ID_KEY, id);
+    
+    // 2. Fetch cloud data in the background
+    setSyncStatus('syncing');
+    try {
+      const cloudData = await firebaseService.loadUserData(id);
+      if (cloudData) {
+        if (cloudData.attendance) setAttendance(cloudData.attendance);
+        if (cloudData.monthlyRates) setMonthlyRates(cloudData.monthlyRates);
+        if (cloudData.mealMode) setMealMode(cloudData.mealMode);
+        if (cloudData.cleaningPerWeek !== undefined) setCleaningPerWeek(cloudData.cleaningPerWeek);
+      }
+      setSyncStatus('synced');
+    } catch (err) {
+      console.error("Background sync error:", err);
+      setSyncStatus('error');
+    }
+  }, []);
+
+  const logout = useCallback(async () => {
+    setSyncId(null);
+    await require('@react-native-async-storage/async-storage').default.removeItem(SYNC_ID_KEY);
   }, []);
 
   const value = useMemo(
@@ -139,6 +179,8 @@ export const AppProvider = ({ children }) => {
       updateMonthlyRate,
       updateMealMode,
       updateCleaningPerWeek,
+      login,
+      logout,
     }),
     [
       ready,
@@ -148,10 +190,13 @@ export const AppProvider = ({ children }) => {
       mealMode,
       cleaningPerWeek,
       syncStatus,
+      syncId,
       toggle,
       updateMonthlyRate,
       updateMealMode,
       updateCleaningPerWeek,
+      login,
+      logout,
     ]
   );
 

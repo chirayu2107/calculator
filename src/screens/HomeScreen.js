@@ -23,6 +23,9 @@ export const HomeScreen = ({ theme }) => {
     updateMonthlyRate,
     updateMealMode,
     updateCleaningPerWeek,
+    syncId,
+    syncStatus,
+    logout,
   } = useApp();
   const now = new Date();
   const { isCompact } = useBreakpoint();
@@ -188,7 +191,8 @@ export const HomeScreen = ({ theme }) => {
         monthlyRates={monthlyRates}
         daysInMonth={dim}
         cleaningPerWeek={cleaningPerWeek}
-        syncStatus={useApp().syncStatus}
+        syncStatus={syncStatus}
+        syncId={syncId}
         onChangeMealMode={updateMealMode}
         onChangeMonthlyRate={updateMonthlyRate}
         onChangeCleaningPerWeek={updateCleaningPerWeek}

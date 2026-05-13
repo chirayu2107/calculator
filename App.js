@@ -6,8 +6,10 @@ import { AppProvider, useApp } from './src/context/AppContext';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { getTheme } from './src/theme/theme';
 
+import { LoginScreen } from './src/screens/LoginScreen';
+
 const Root = ({ theme }) => {
-  const { ready } = useApp();
+  const { ready, syncId } = useApp();
   if (!ready) {
     return (
       <View style={[styles.loading, { backgroundColor: theme.bg }]}>
@@ -15,6 +17,11 @@ const Root = ({ theme }) => {
       </View>
     );
   }
+
+  if (!syncId) {
+    return <LoginScreen theme={theme} />;
+  }
+
   return <HomeScreen theme={theme} />;
 };
 

@@ -12,6 +12,7 @@ export const firebaseService = {
     try {
       const userRef = doc(db, COLLECTION, userId);
       await setDoc(userRef, data, { merge: true });
+      console.log(`[Firebase] Data saved successfully for user: ${userId}`);
     } catch (error) {
       console.error('Error saving user data:', error);
     }
@@ -23,15 +24,20 @@ export const firebaseService = {
   async loadUserData(userId) {
     if (!userId) return null;
     try {
+      console.log(`[Firebase] Attempting to load data for: ${userId}`);
       const userRef = doc(db, COLLECTION, userId);
       const docSnap = await getDoc(userRef);
       if (docSnap.exists()) {
+        console.log(`[Firebase] Data found for: ${userId}`);
         return docSnap.data();
       }
+      console.log(`[Firebase] No data found for: ${userId}, starting fresh.`);
       return null;
     } catch (error) {
       console.error('Error loading user data:', error);
-      return null;
+      // If we're "offline" or auth failed, we might still want to return null instead of throwing
+      // so the app can continue with local data.
+      return null; 
     }
   },
 
