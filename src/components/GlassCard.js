@@ -45,8 +45,9 @@ const styles = StyleSheet.create({
   highlight: {
     ...StyleSheet.absoluteFillObject,
     borderRadius: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderTopWidth: 1,
+    borderLeftWidth: 1,
+    borderColor: 'rgba(255,255,255,0.25)',
     pointerEvents: 'none',
   },
 });

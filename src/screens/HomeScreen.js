@@ -249,10 +249,10 @@ const styles = StyleSheet.create({
   },
   blob: {
     position: 'absolute',
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    filter: 'blur(80px)',
+    width: 500,
+    height: 500,
+    borderRadius: 250,
+    filter: 'blur(100px)',
   },
   safe: { flex: 1 },
   toolbarContainer: {
