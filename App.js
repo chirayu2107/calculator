@@ -10,6 +10,9 @@ import { LoginScreen } from './src/screens/LoginScreen';
 
 const Root = ({ theme }) => {
   const { ready, syncId } = useApp();
+  
+  console.log('[Root] State:', { ready, syncId });
+
   if (!ready) {
     return (
       <View style={[styles.loading, { backgroundColor: theme.bg }]}>
@@ -19,9 +22,11 @@ const Root = ({ theme }) => {
   }
 
   if (!syncId) {
+    console.log('[Root] Rendering LoginScreen');
     return <LoginScreen theme={theme} />;
   }
 
+  console.log('[Root] Rendering HomeScreen');
   return <HomeScreen theme={theme} />;
 };
 

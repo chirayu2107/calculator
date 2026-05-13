@@ -10,6 +10,7 @@ import {
 import { auth } from '../firebase/config';
 import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { firebaseService } from '../firebase/firebaseService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AppContext = createContext(null);
 const SHARED_USER_ID_DEFAULT = 'shared_v1';
@@ -32,32 +33,47 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     let alive = true;
     
-    // Load local storage first for immediate UI
     const init = async () => {
       try {
+        console.log('[AppContext] Initializing...');
         const [data, storedSyncId] = await Promise.all([
           loadAll(),
-          require('@react-native-async-storage/async-storage').default.getItem(SYNC_ID_KEY)
+          AsyncStorage.getItem(SYNC_ID_KEY)
         ]);
         
         if (!alive) return;
+        
+        // Apply local data first
         setAttendance(data.attendance);
         setMonthlyRates(data.monthlyRates);
         setMealMode(data.mealMode);
         setCleaningPerWeek(data.cleaningPerWeek);
-        if (storedSyncId) setSyncId(storedSyncId);
+        
+        if (storedSyncId) {
+          console.log('[AppContext] Found stored syncId:', storedSyncId);
+          setSyncId(storedSyncId);
+          // Fetch latest cloud data immediately for the stored ID
+          try {
+            const cloudData = await firebaseService.loadUserData(storedSyncId);
+            if (cloudData && alive) {
+              if (cloudData.attendance) setAttendance(cloudData.attendance);
+              if (cloudData.monthlyRates) setMonthlyRates(cloudData.monthlyRates);
+              if (cloudData.mealMode) setMealMode(cloudData.mealMode);
+              if (cloudData.cleaningPerWeek !== undefined) setCleaningPerWeek(cloudData.cleaningPerWeek);
+            }
+          } catch (e) {
+            console.error('[AppContext] Initial cloud load failed:', e);
+          }
+        }
+        
         setReady(true);
+        setUser({ uid: 'guest' });
       } catch (err) {
-        console.error("Init error:", err);
+        console.error("[AppContext] Init error:", err);
         if (alive) setReady(true);
       }
     };
     init();
-
-    // Initialize Auth (Disabled Anonymous Auth to avoid configuration errors)
-    // We now use the custom syncId for data partitioning
-    setReady(true);
-    setUser({ uid: 'guest' });
 
     return () => {
       alive = false;
@@ -137,28 +153,38 @@ export const AppProvider = ({ children }) => {
       .catch(() => setSyncStatus('error'));
   }, [syncId]);
 
-  const login = useCallback(async (username, pin) => {
+  const login = useCallback((username, pin) => {
     const id = `${username}_${pin}`.toLowerCase().replace(/\s+/g, '');
+    if (syncId === id) return; // Already logged in with this ID
     
-    // 1. Set ID immediately so the UI transitions to Home Screen
+    console.log('[AppContext] Login attempt with:', username);
+    console.log('[AppContext] Setting syncId to:', id);
     setSyncId(id);
-    await require('@react-native-async-storage/async-storage').default.setItem(SYNC_ID_KEY, id);
     
-    // 2. Fetch cloud data in the background
-    setSyncStatus('syncing');
-    try {
-      const cloudData = await firebaseService.loadUserData(id);
-      if (cloudData) {
-        if (cloudData.attendance) setAttendance(cloudData.attendance);
-        if (cloudData.monthlyRates) setMonthlyRates(cloudData.monthlyRates);
-        if (cloudData.mealMode) setMealMode(cloudData.mealMode);
-        if (cloudData.cleaningPerWeek !== undefined) setCleaningPerWeek(cloudData.cleaningPerWeek);
+    // 2. Perform background operations
+    const runBackgroundTasks = async () => {
+      try {
+        // Save to storage
+        await AsyncStorage.setItem(SYNC_ID_KEY, id);
+        console.log('[AppContext] syncId saved to storage');
+
+        // Fetch cloud data
+        setSyncStatus('syncing');
+        const cloudData = await firebaseService.loadUserData(id);
+        if (cloudData) {
+          if (cloudData.attendance) setAttendance(cloudData.attendance);
+          if (cloudData.monthlyRates) setMonthlyRates(cloudData.monthlyRates);
+          if (cloudData.mealMode) setMealMode(cloudData.mealMode);
+          if (cloudData.cleaningPerWeek !== undefined) setCleaningPerWeek(cloudData.cleaningPerWeek);
+        }
+        setSyncStatus('synced');
+      } catch (err) {
+        console.error('[AppContext] Background task error:', err);
+        setSyncStatus('error');
       }
-      setSyncStatus('synced');
-    } catch (err) {
-      console.error("Background sync error:", err);
-      setSyncStatus('error');
-    }
+    };
+
+    runBackgroundTasks();
   }, []);
 
   const logout = useCallback(async () => {
@@ -181,6 +207,7 @@ export const AppProvider = ({ children }) => {
       updateCleaningPerWeek,
       login,
       logout,
+      syncId,
     }),
     [
       ready,

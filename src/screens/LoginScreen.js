@@ -19,21 +19,17 @@ export const LoginScreen = ({ theme }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleLogin = async () => {
+  const handleLogin = () => {
+    console.log('[LoginScreen] handleLogin triggered');
     if (!username || !pin) {
       setError('Please enter both username and pin');
       return;
     }
     setError('');
-    setLoading(true);
-    try {
-      await login(username, pin);
-    } catch (err) {
-      setError('Failed to sync. Please try again.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    
+    console.log('[LoginScreen] Calling login context function...');
+    login(username, pin);
+    console.log('[LoginScreen] login context function called');
   };
 
   const fontFamily = theme.font;
@@ -107,14 +103,15 @@ export const LoginScreen = ({ theme }) => {
                   fontFamily,
                 },
               ]}
-              placeholder="e.g. 1234"
+              placeholder="e.g. maidcalc"
               placeholderTextColor={theme.textSubtle}
               value={pin}
               onChangeText={(t) => {
                 setPin(t);
                 setError('');
               }}
-              keyboardType="numeric"
+              autoCapitalize="none"
+              autoCorrect={false}
               secureTextEntry
             />
           </View>
