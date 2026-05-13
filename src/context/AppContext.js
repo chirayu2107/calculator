@@ -104,22 +104,29 @@ export const AppProvider = ({ children }) => {
   }, [ready, user, syncId]);
 
   const toggle = useCallback((dateKey, field) => {
-    const current = attendance[dateKey] || emptyDay;
-    const nextDay = { ...current, [field]: !current[field] };
-    const dayIsEmpty = !nextDay.lunch && !nextDay.dinner && !nextDay.cleaning;
-    
-    const next = { ...attendance };
-    if (dayIsEmpty) delete next[dateKey];
-    else next[dateKey] = nextDay;
-    
-    setAttendance(next);
-    saveAttendance(next);
-    if (!syncId) return;
-    setSyncStatus('syncing');
-    firebaseService.saveUserData(syncId, { attendance: next })
-      .then(() => setSyncStatus('synced'))
-      .catch(() => setSyncStatus('error'));
-  }, [attendance, syncId]);
+    setAttendance((prev) => {
+      const current = prev[dateKey] || emptyDay;
+      const nextDay = { ...current, [field]: !current[field] };
+      const dayIsEmpty = !nextDay.lunch && !nextDay.dinner && !nextDay.cleaning;
+      
+      const next = { ...prev };
+      if (dayIsEmpty) delete next[dateKey];
+      else next[dateKey] = nextDay;
+      
+      // Sync to local storage
+      saveAttendance(next);
+      
+      // Sync to cloud
+      if (syncId) {
+        setSyncStatus('syncing');
+        firebaseService.saveUserData(syncId, { attendance: next })
+          .then(() => setSyncStatus('synced'))
+          .catch(() => setSyncStatus('error'));
+      }
+      
+      return next;
+    });
+  }, [syncId]);
 
   const updateMonthlyRate = useCallback((field, value) => {
     const next = { ...monthlyRates, [field]: value };

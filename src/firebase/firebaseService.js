@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, setDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from './config';
 
 const COLLECTION = 'users';
@@ -11,7 +11,16 @@ export const firebaseService = {
     if (!userId) return;
     try {
       const userRef = doc(db, COLLECTION, userId);
-      await setDoc(userRef, data, { merge: true });
+      // Use updateDoc to ensure that maps (like attendance) are replaced, not merged.
+      // This allows unselecting/deleting items correctly.
+      await updateDoc(userRef, data).catch(async (err) => {
+        // If document doesn't exist yet, use setDoc
+        if (err.code === 'not-found') {
+          await setDoc(userRef, data);
+        } else {
+          throw err;
+        }
+      });
       console.log(`[Firebase] Data saved successfully for user: ${userId}`);
     } catch (error) {
       console.error('Error saving user data:', error);
