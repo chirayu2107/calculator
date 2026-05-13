@@ -25,6 +25,7 @@ export const lightTheme = {
   today: '#6366F1',
   shadow: 'rgba(0, 0, 0, 0.05)',
   shadowStrong: 'rgba(0, 0, 0, 0.1)',
+  danger: '#EF4444',
 };
 
 export const darkTheme = {
@@ -52,6 +53,7 @@ export const darkTheme = {
   today: '#818CF8',
   shadow: 'rgba(0, 0, 0, 0.2)',
   shadowStrong: 'rgba(0, 0, 0, 0.4)',
+  danger: '#F87171',
 };
 
 export const getTheme = (scheme) => (scheme === 'dark' ? darkTheme : lightTheme);

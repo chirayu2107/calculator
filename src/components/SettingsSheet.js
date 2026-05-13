@@ -114,16 +114,17 @@ export const SettingsSheet = ({
                     style={({ pressed }) => [
                       styles.logoutButton,
                       {
-                        backgroundColor: theme.danger,
-                        borderColor: theme.danger,
-                        opacity: pressed ? 0.8 : 1,
-                        boxShadow: `0 4px 12px ${theme.danger}40`,
+                        backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                        borderColor: 'rgba(239, 68, 68, 0.3)',
+                        backdropFilter: 'blur(10px)',
+                        opacity: pressed ? 0.7 : 1,
+                        boxShadow: `0 4px 12px ${theme.shadow}`,
                       }
                     ]}
                     onPress={onLogout}
                   >
-                    <Text style={[styles.logoutText, { color: '#FFFFFF', fontFamily }]}>Logout</Text>
-                    <Text style={[styles.logoutSubtext, { color: 'rgba(255,255,255,0.8)', fontFamily }]}>
+                    <Text style={[styles.logoutText, { color: theme.danger, fontFamily }]}>Logout</Text>
+                    <Text style={[styles.logoutSubtext, { color: theme.textMuted, fontFamily }]}>
                       Disconnect this device from cloud sync
                     </Text>
                   </Pressable>
