@@ -196,6 +196,7 @@ export const HomeScreen = ({ theme }) => {
         onChangeMealMode={updateMealMode}
         onChangeMonthlyRate={updateMonthlyRate}
         onChangeCleaningPerWeek={updateCleaningPerWeek}
+        onLogout={logout}
         onClose={() => setSettingsOpen(false)}
       />
 

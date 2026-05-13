@@ -196,7 +196,7 @@ export const AppProvider = ({ children }) => {
 
   const logout = useCallback(async () => {
     setSyncId(null);
-    await require('@react-native-async-storage/async-storage').default.removeItem(SYNC_ID_KEY);
+    await AsyncStorage.removeItem(SYNC_ID_KEY);
   }, []);
 
   const value = useMemo(

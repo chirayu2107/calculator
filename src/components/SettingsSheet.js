@@ -16,6 +16,7 @@ export const SettingsSheet = ({
   onChangeMonthlyRate,
   onChangeCleaningPerWeek,
   syncId,
+  onLogout,
   onClose,
 }) => {
   const { isCompact } = useBreakpoint();
@@ -102,10 +103,29 @@ export const SettingsSheet = ({
                 </Text>
               </View>
               {syncId && (
-                <View style={styles.accountRow}>
-                  <Text style={[styles.syncIdText, { color: theme.textSubtle, fontFamily }]}>
-                    Active Sync: {syncId}
-                  </Text>
+                <View style={styles.accountContainer}>
+                  <View style={styles.accountRow}>
+                    <Text style={[styles.syncIdText, { color: theme.textSubtle, fontFamily }]}>
+                      Active Sync: {syncId}
+                    </Text>
+                  </View>
+                  <View style={{ height: 16 }} />
+                  <Pressable
+                    style={({ pressed }) => [
+                      styles.logoutButton,
+                      {
+                        backgroundColor: theme.surfaceAlt,
+                        borderColor: theme.danger + '40',
+                        opacity: pressed ? 0.7 : 1,
+                      }
+                    ]}
+                    onPress={onLogout}
+                  >
+                    <Text style={[styles.logoutText, { color: theme.danger, fontFamily }]}>Logout</Text>
+                    <Text style={[styles.logoutSubtext, { color: theme.textSubtle, fontFamily }]}>
+                      Disconnect this device from cloud sync
+                    </Text>
+                  </Pressable>
                 </View>
               )}
             </View>
@@ -227,5 +247,24 @@ const styles = StyleSheet.create({
     opacity: 0.8,
     textAlign: 'center',
     width: '100%',
+  },
+  logoutButton: {
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoutText: {
+    fontSize: 13,
+    fontWeight: '700',
+    marginBottom: 2,
+  },
+  logoutSubtext: {
+    fontSize: 10,
+    opacity: 0.7,
+  },
+  accountContainer: {
+    marginTop: 8,
   },
 });
