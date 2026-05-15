@@ -3,16 +3,25 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { DayPill } from './DayPill';
 import { GlassCard } from './GlassCard';
 
-export const DayCell = ({ day, entry, isToday, mealMode, theme, onToggle, onPress, compact }) => {
+export const DayCell = ({
+  day,
+  entry,
+  isToday,
+  categories,
+  theme,
+  onToggle,
+  onPress,
+  compact,
+}) => {
   if (!day) {
     return <View style={[styles.slot, compact && styles.slotCompact]} />;
   }
-  const showLunch = mealMode !== 'dinner';
-  const showDinner = mealMode !== 'lunch';
-  const e = entry || { lunch: false, dinner: false, cleaning: false };
+  const e = entry || {};
+  const activeCats = (categories || []).filter((c) => c.active);
 
-  const dotForCompact = (active, color) => (
+  const dotForCompact = (active, color, key) => (
     <View
+      key={key}
       style={[
         styles.indicator,
         {
@@ -50,9 +59,7 @@ export const DayCell = ({ day, entry, isToday, mealMode, theme, onToggle, onPres
                 {day}
               </Text>
               <View style={styles.indicators}>
-                {showLunch && dotForCompact(e.lunch, theme.lunch)}
-                {showDinner && dotForCompact(e.dinner, theme.dinner)}
-                {dotForCompact(e.cleaning, theme.cleaning)}
+                {activeCats.map((c) => dotForCompact(!!e[c.id], c.color, c.id))}
               </View>
             </GlassCard>
           )}
@@ -82,34 +89,17 @@ export const DayCell = ({ day, entry, isToday, mealMode, theme, onToggle, onPres
           {day}
         </Text>
         <View style={styles.pills}>
-          {showLunch && (
+          {activeCats.map((c) => (
             <DayPill
-              label="Lunch"
-              color={theme.lunch}
-              softColor={theme.lunchSoft}
-              active={e.lunch}
-              onPress={() => onToggle('lunch')}
+              key={c.id}
+              label={c.name}
+              color={c.color}
+              softColor={c.color + '22'}
+              active={!!e[c.id]}
+              onPress={() => onToggle(c.id)}
               theme={theme}
             />
-          )}
-          {showDinner && (
-            <DayPill
-              label="Dinner"
-              color={theme.dinner}
-              softColor={theme.dinnerSoft}
-              active={e.dinner}
-              onPress={() => onToggle('dinner')}
-              theme={theme}
-            />
-          )}
-          <DayPill
-            label="Clean"
-            color={theme.cleaning}
-            softColor={theme.cleaningSoft}
-            active={e.cleaning}
-            onPress={() => onToggle('cleaning')}
-            theme={theme}
-          />
+          ))}
         </View>
       </GlassCard>
     </View>
@@ -150,12 +140,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 4,
+    flexWrap: 'wrap',
+    gap: 4,
   },
   indicator: {
     width: 6,
     height: 6,
     borderRadius: 3,
     borderWidth: 1,
-    marginRight: 4,
   },
 });

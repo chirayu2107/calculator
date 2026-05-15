@@ -4,26 +4,38 @@
     "slug": "maid-tracker",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
+    "scheme": "maidtracker",
     "splash": {
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#6366F1"
     },
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.maidtracker.app"
+      "bundleIdentifier": "com.maidtracker.app",
+      "buildNumber": "1"
     },
     "android": {
       "package": "com.maidtracker.app",
+      "versionCode": 1,
       "adaptiveIcon": {
-        "backgroundColor": "#ffffff"
-      }
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#4338CA"
+      },
+      "permissions": []
     },
     "web": {
-      "bundler": "metro"
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-asset"
-    ]
+    "plugins": ["expo-asset"],
+    "extra": {
+      "eas": {
+        "projectId": ""
+      }
+    }
   }
 }

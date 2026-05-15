@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const formatDateLabel = (dateKey) => {
   if (!dateKey) return '';
@@ -12,12 +12,12 @@ const formatDateLabel = (dateKey) => {
   });
 };
 
-const Row = ({ label, active, color, softColor, edgeColor, onPress, theme, isLast }) => (
+const Row = ({ label, icon, active, color, onPress, theme, isLast }) => (
   <Pressable
     onPress={onPress}
     style={({ pressed, hovered }) => [
       styles.row,
-      !isLast && { borderBottomWidth: 1, borderBottomColor: theme.separator },
+      !isLast && { borderBottomWidth: 1, borderBottomColor: theme.separator || theme.border },
       hovered && { backgroundColor: theme.surfaceHover },
       pressed && { opacity: 0.7 },
     ]}
@@ -25,15 +25,16 @@ const Row = ({ label, active, color, softColor, edgeColor, onPress, theme, isLas
     <View
       style={[
         styles.swatch,
-        { backgroundColor: active ? color : softColor, borderColor: active ? color : edgeColor },
+        { backgroundColor: active ? color : color + '22', borderColor: active ? color : color + '55' },
       ]}
     />
+    {icon ? <Text style={styles.icon}>{icon}</Text> : null}
     <Text style={[styles.rowLabel, { color: theme.text, fontFamily: theme.font }]}>{label}</Text>
     <View
       style={[
         styles.toggle,
         {
-          backgroundColor: active ? color : theme.inputFill,
+          backgroundColor: active ? color : theme.surfaceAlt,
           borderColor: active ? color : theme.border,
         },
       ]}
@@ -48,18 +49,17 @@ const Row = ({ label, active, color, softColor, edgeColor, onPress, theme, isLas
   </Pressable>
 );
 
-export const DayEditorModal = ({ visible, dateKey, entry, mealMode, theme, onToggle, onClose }) => {
-  const showLunch = mealMode !== 'dinner';
-  const showDinner = mealMode !== 'lunch';
-  const e = entry || { lunch: false, dinner: false, cleaning: false };
-
-  const items = [];
-  if (showLunch)
-    items.push({ key: 'lunch', label: 'Lunch', color: theme.lunch, softColor: theme.lunchSoft, edgeColor: theme.lunchEdge, active: e.lunch });
-  if (showDinner)
-    items.push({ key: 'dinner', label: 'Dinner', color: theme.dinner, softColor: theme.dinnerSoft, edgeColor: theme.dinnerEdge, active: e.dinner });
-  items.push({ key: 'cleaning', label: 'Cleaning', color: theme.cleaning, softColor: theme.cleaningSoft, edgeColor: theme.cleaningEdge, active: e.cleaning });
-
+export const DayEditorModal = ({
+  visible,
+  dateKey,
+  entry,
+  categories,
+  theme,
+  onToggle,
+  onClose,
+}) => {
+  const e = entry || {};
+  const items = (categories || []).filter((c) => c.active);
   const fontFamily = theme.font;
 
   return (
@@ -74,7 +74,7 @@ export const DayEditorModal = ({ visible, dateKey, entry, mealMode, theme, onTog
               boxShadow: `0 8px 24px ${theme.shadowStrong}`,
             },
           ]}
-          onPress={(e) => e.stopPropagation()}
+          onPress={(ev) => ev.stopPropagation()}
         >
           <View style={[styles.header, { borderBottomColor: theme.border }]}>
             <Text style={[styles.title, { color: theme.text, fontFamily }]}>
@@ -92,26 +92,33 @@ export const DayEditorModal = ({ visible, dateKey, entry, mealMode, theme, onTog
               <Text style={[styles.close, { color: theme.textMuted, fontFamily }]}>✕</Text>
             </Pressable>
           </View>
-          <View
-            style={[
-              styles.group,
-              { backgroundColor: theme.surface, borderColor: theme.border },
-            ]}
-          >
-            {items.map((it, idx) => (
-              <Row
-                key={it.key}
-                label={it.label}
-                color={it.color}
-                softColor={it.softColor}
-                edgeColor={it.edgeColor}
-                active={it.active}
-                onPress={() => onToggle(it.key)}
-                theme={theme}
-                isLast={idx === items.length - 1}
-              />
-            ))}
-          </View>
+          <ScrollView style={styles.scrollWrap}>
+            <View
+              style={[
+                styles.group,
+                { backgroundColor: theme.surface, borderColor: theme.border },
+              ]}
+            >
+              {items.length === 0 ? (
+                <Text style={[styles.empty, { color: theme.textMuted, fontFamily }]}>
+                  No active categories. Add one in Settings.
+                </Text>
+              ) : (
+                items.map((it, idx) => (
+                  <Row
+                    key={it.id}
+                    label={it.name}
+                    icon={it.icon}
+                    color={it.color}
+                    active={!!e[it.id]}
+                    onPress={() => onToggle(it.id)}
+                    theme={theme}
+                    isLast={idx === items.length - 1}
+                  />
+                ))
+              )}
+            </View>
+          </ScrollView>
         </Pressable>
       </Pressable>
     </Modal>
@@ -128,8 +135,9 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '100%',
-    maxWidth: 360,
-    borderRadius: 10,
+    maxWidth: 380,
+    maxHeight: '80%',
+    borderRadius: 12,
     borderWidth: 1,
     overflow: 'hidden',
     boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
@@ -143,10 +151,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
   },
-  title: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
+  title: { fontSize: 13, fontWeight: '600' },
   closeBtn: {
     width: 24,
     height: 24,
@@ -154,35 +159,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  close: {
-    fontSize: 13,
-    fontWeight: '500',
-  },
-  group: {
-    margin: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    overflow: 'hidden',
-  },
+  close: { fontSize: 13, fontWeight: '500' },
+  scrollWrap: { maxHeight: '100%' },
+  group: { margin: 12, borderRadius: 8, borderWidth: 1, overflow: 'hidden' },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 10,
     minHeight: 44,
+    gap: 4,
   },
-  swatch: {
-    width: 16,
-    height: 16,
-    borderRadius: 4,
-    borderWidth: 1,
-    marginRight: 10,
-  },
-  rowLabel: {
-    fontSize: 13,
-    fontWeight: '500',
-    flex: 1,
-  },
+  swatch: { width: 14, height: 14, borderRadius: 4, borderWidth: 1, marginRight: 8 },
+  icon: { fontSize: 14, marginRight: 4 },
+  rowLabel: { fontSize: 13, fontWeight: '500', flex: 1 },
   toggle: {
     width: 36,
     height: 20,
@@ -198,4 +188,5 @@ const styles = StyleSheet.create({
     boxShadow: '0 1px 1px rgba(0, 0, 0, 0.12)',
     elevation: 1,
   },
+  empty: { fontSize: 13, textAlign: 'center', padding: 24 },
 });

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6366F1"/>
+      <stop offset="1" stop-color="#4338CA"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.78"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" rx="220" fill="url(#bg)"/>
+
+  <!-- Calendar card -->
+  <rect x="192" y="240" width="640" height="600" rx="64" fill="url(#card)"/>
+  <rect x="192" y="240" width="640" height="120" rx="64" fill="#4338CA"/>
+  <rect x="192" y="320" width="640" height="40" fill="#4338CA"/>
+
+  <!-- Header binding rings -->
+  <circle cx="320" cy="240" r="28" fill="#312E81"/>
+  <circle cx="704" cy="240" r="28" fill="#312E81"/>
+
+  <!-- Calendar grid dots -->
+  <g fill="#CBD5E1">
+    <circle cx="288" cy="448" r="22"/><circle cx="384" cy="448" r="22"/><circle cx="480" cy="448" r="22"/><circle cx="576" cy="448" r="22"/><circle cx="672" cy="448" r="22"/>
+    <circle cx="288" cy="544" r="22"/><circle cx="672" cy="544" r="22"/>
+    <circle cx="288" cy="640" r="22"/><circle cx="384" cy="640" r="22"/><circle cx="672" cy="640" r="22"/>
+    <circle cx="288" cy="736" r="22"/><circle cx="576" cy="736" r="22"/><circle cx="672" cy="736" r="22"/>
+  </g>
+
+  <!-- Active days (lunch=amber, dinner=emerald, cleaning=blue) -->
+  <circle cx="384" cy="544" r="26" fill="#F59E0B"/>
+  <circle cx="480" cy="544" r="26" fill="#10B981"/>
+  <circle cx="576" cy="544" r="26" fill="#3B82F6"/>
+  <circle cx="480" cy="640" r="26" fill="#F59E0B"/>
+  <circle cx="576" cy="640" r="26" fill="#10B981"/>
+  <circle cx="384" cy="736" r="26" fill="#3B82F6"/>
+  <circle cx="480" cy="736" r="26" fill="#F59E0B"/>
+</svg>

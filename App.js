@@ -4,16 +4,14 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider, useApp } from './src/context/AppContext';
 import { HomeScreen } from './src/screens/HomeScreen';
+import { AuthScreen } from './src/screens/AuthScreen';
+import { ErrorBoundary } from './src/components/ErrorBoundary';
 import { getTheme } from './src/theme/theme';
 
-import { LoginScreen } from './src/screens/LoginScreen';
-
 const Root = ({ theme }) => {
-  const { ready, syncId } = useApp();
-  
-  console.log('[Root] State:', { ready, syncId });
+  const { authReady, user, dataReady } = useApp();
 
-  if (!ready) {
+  if (!authReady) {
     return (
       <View style={[styles.loading, { backgroundColor: theme.bg }]}>
         <ActivityIndicator color={theme.text} />
@@ -21,12 +19,16 @@ const Root = ({ theme }) => {
     );
   }
 
-  if (!syncId) {
-    console.log('[Root] Rendering LoginScreen');
-    return <LoginScreen theme={theme} />;
+  if (!user) return <AuthScreen theme={theme} />;
+
+  if (!dataReady) {
+    return (
+      <View style={[styles.loading, { backgroundColor: theme.bg }]}>
+        <ActivityIndicator color={theme.text} />
+      </View>
+    );
   }
 
-  console.log('[Root] Rendering HomeScreen');
   return <HomeScreen theme={theme} />;
 };
 
@@ -36,18 +38,16 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <AppProvider>
-        <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
-        <Root theme={theme} />
-      </AppProvider>
+      <ErrorBoundary theme={theme}>
+        <AppProvider>
+          <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+          <Root theme={theme} />
+        </AppProvider>
+      </ErrorBoundary>
     </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  loading: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  loading: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });

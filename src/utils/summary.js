@@ -1,58 +1,59 @@
 import { daysInMonth, pad2 } from './date';
+import { RATE_TYPES } from '../storage/storage';
 
-export const effectiveRates = (monthlyRates, cleaningPerWeek, year, monthIndex) => {
-  const dim = daysInMonth(year, monthIndex);
-  const expectedCleaningSessions = (cleaningPerWeek * dim) / 7;
-  return {
-    lunch: dim > 0 ? monthlyRates.lunch / dim : 0,
-    dinner: dim > 0 ? monthlyRates.dinner / dim : 0,
-    cleaning: expectedCleaningSessions > 0
-      ? monthlyRates.cleaning / expectedCleaningSessions
-      : 0,
-    expectedCleaningSessions,
-    daysInMonth: dim,
-  };
+const perOccurrenceCost = (cat, dim) => {
+  if (!cat) return 0;
+  switch (cat.rateType) {
+    case RATE_TYPES.PER_SESSION:
+      return Number(cat.ratePerSession) || 0;
+    case RATE_TYPES.MONTHLY_WITH_TARGET: {
+      const expectedSessions = ((Number(cat.expectedPerWeek) || 0) * dim) / 7;
+      return expectedSessions > 0 ? (Number(cat.monthlyRate) || 0) / expectedSessions : 0;
+    }
+    case RATE_TYPES.MONTHLY:
+    default:
+      return dim > 0 ? (Number(cat.monthlyRate) || 0) / dim : 0;
+  }
 };
 
-export const computeMonthSummary = (
-  attendance,
-  year,
-  monthIndex,
-  monthlyRates,
-  mealMode,
-  cleaningPerWeek
-) => {
+export const computeMonthSummary = (categories, attendance, year, monthIndex) => {
+  const dim = daysInMonth(year, monthIndex);
   const prefix = `${year}-${pad2(monthIndex + 1)}-`;
-  let lunchCount = 0;
-  let dinnerCount = 0;
-  let cleaningCount = 0;
+
+  const counts = {};
+  for (const cat of categories) counts[cat.id] = 0;
 
   for (const key of Object.keys(attendance)) {
     if (!key.startsWith(prefix)) continue;
-    const e = attendance[key];
-    if (e.lunch) lunchCount += 1;
-    if (e.dinner) dinnerCount += 1;
-    if (e.cleaning) cleaningCount += 1;
+    const day = attendance[key] || {};
+    for (const catId of Object.keys(day)) {
+      if (day[catId] && counts[catId] !== undefined) counts[catId] += 1;
+    }
   }
 
-  const eff = effectiveRates(monthlyRates, cleaningPerWeek, year, monthIndex);
-  const showLunch = mealMode !== 'dinner';
-  const showDinner = mealMode !== 'lunch';
+  const perCategory = categories.map((cat) => {
+    const count = counts[cat.id] || 0;
+    const perOcc = perOccurrenceCost(cat, dim);
+    const total = count * perOcc;
+    return {
+      id: cat.id,
+      name: cat.name,
+      color: cat.color,
+      icon: cat.icon,
+      active: cat.active,
+      count,
+      perOccurrence: perOcc,
+      total,
+    };
+  });
 
-  const lunchTotal = showLunch ? lunchCount * eff.lunch : 0;
-  const dinnerTotal = showDinner ? dinnerCount * eff.dinner : 0;
-  const foodTotal = lunchTotal + dinnerTotal;
-  const cleaningTotal = cleaningCount * eff.cleaning;
+  const grandTotal = perCategory
+    .filter((c) => c.active)
+    .reduce((sum, c) => sum + c.total, 0);
 
   return {
-    lunchCount,
-    dinnerCount,
-    cleaningCount,
-    lunchTotal,
-    dinnerTotal,
-    foodTotal,
-    cleaningTotal,
-    grandTotal: foodTotal + cleaningTotal,
-    effectiveRates: eff,
+    perCategory,
+    grandTotal,
+    daysInMonth: dim,
   };
 };
