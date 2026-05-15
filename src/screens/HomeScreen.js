@@ -77,7 +77,7 @@ export const HomeScreen = ({ theme }) => {
   return (
     <View style={[styles.root, { backgroundColor: theme.bg }]}>
       <View style={[styles.blobContainer, { pointerEvents: 'none' }]}>
-        <View style={[styles.blob, { backgroundColor: theme.primary, top: -200, left: -150, width: 700, height: 700, opacity: 0.05 }]} />
+        <View style={[styles.blob, { backgroundColor: theme.primary, top: -500, left: -200, width: 800, height: 800, opacity: 0.04 }]} />
         <View style={[styles.blob, { backgroundColor: theme.lunch, bottom: -150, right: -150, width: 700, height: 700, opacity: 0.08 }]} />
         <View style={[styles.blob, { backgroundColor: theme.dinner, top: '40%', left: '30%', width: 600, height: 600, opacity: 0.04 }]} />
       </View>

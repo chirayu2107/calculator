@@ -25,17 +25,17 @@ export const GlassCard = ({
 }) => {
   const isDark = theme.mode === 'dark';
   const isWeb = Platform.OS === 'web';
-  const blurIntensity = intensity ?? (tinted || accentColor ? 25 : 15);
+  const blurIntensity = intensity ?? (tinted || accentColor ? 15 : 10);
 
   // When an accent color is given, the gradient tint is the accent color at
   // low opacity — that's what gives the iOS "tinted glass" / colored bubble
   // look. Otherwise fall back to the neutral white-ish glass.
   const tintTop = accentColor
-    ? `${accentColor}26` // ~15% opacity
+    ? `${accentColor}14` // ~8% opacity
     : tinted
     ? theme.glassTintStrong
     : theme.glassTint;
-  const tintBottom = accentColor ? `${accentColor}08` : theme.glassTintEnd; // ~3%
+  const tintBottom = accentColor ? `${accentColor}05` : theme.glassTintEnd; // ~2%
 
   return (
     <View
@@ -44,8 +44,8 @@ export const GlassCard = ({
           borderRadius: radius,
           borderWidth: noBorder ? 0 : StyleSheet.hairlineWidth,
           borderColor: noBorder ? 'transparent' : (borderColor ?? theme.glassBorder),
-          // Removing overflow: 'hidden' here as it often causes 
-          // backdrop-filter bugs on iOS Safari
+          // Adding a tiny bit of solid color helps Safari's backdrop-filter anchor
+          backgroundColor: 'rgba(255, 255, 255, 0.01)',
         },
         style,
       ]}
