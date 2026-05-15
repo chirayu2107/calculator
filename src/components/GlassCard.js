@@ -25,17 +25,17 @@ export const GlassCard = ({
 }) => {
   const isDark = theme.mode === 'dark';
   const isWeb = Platform.OS === 'web';
-  const blurIntensity = intensity ?? (tinted || accentColor ? 75 : 55);
+  const blurIntensity = intensity ?? (tinted || accentColor ? 60 : 40);
 
   // When an accent color is given, the gradient tint is the accent color at
   // low opacity — that's what gives the iOS "tinted glass" / colored bubble
   // look. Otherwise fall back to the neutral white-ish glass.
   const tintTop = accentColor
-    ? `${accentColor}40` // ~25% opacity
+    ? `${accentColor}26` // ~15% opacity
     : tinted
     ? theme.glassTintStrong
     : theme.glassTint;
-  const tintBottom = accentColor ? `${accentColor}0D` : theme.glassTintEnd; // ~5%
+  const tintBottom = accentColor ? `${accentColor}08` : theme.glassTintEnd; // ~3%
 
   return (
     <View
@@ -65,23 +65,8 @@ export const GlassCard = ({
         pointerEvents="none"
       />
 
-      {/* 3 — Specular highlight (top + left inner edge) */}
-      <View
-        pointerEvents="none"
-        style={[
-          styles.specular,
-          { borderRadius: radius, borderColor: theme.glassSpecular },
-        ]}
-      />
-
-      {/* 4 — Top sheen */}
-      <LinearGradient
-        colors={[theme.glassSheen, 'transparent']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        style={[styles.sheen, { borderTopLeftRadius: radius, borderTopRightRadius: radius }]}
-        pointerEvents="none"
-      />
+      {/* 3 — Specular highlight removed for clarity */}
+      {/* 4 — Top sheen removed for clarity */}
 
       <View style={styles.content}>{children}</View>
     </View>

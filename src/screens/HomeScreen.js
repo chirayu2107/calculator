@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
   },
-  scrollCompact: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 32 },
+  scrollCompact: { paddingHorizontal: 16, paddingTop: 24, paddingBottom: 32 },
   legend: {
     flexDirection: 'row',
     alignItems: 'center',
