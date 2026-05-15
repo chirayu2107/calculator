@@ -77,9 +77,9 @@ export const HomeScreen = ({ theme }) => {
   return (
     <View style={[styles.root, { backgroundColor: theme.bg }]}>
       <View style={[styles.blobContainer, { pointerEvents: 'none' }]}>
-        <View style={[styles.blob, { backgroundColor: theme.primary, top: -180, left: -120, width: 720, height: 720, opacity: theme.mode === 'dark' ? 0.18 : 0.22 }]} />
-        <View style={[styles.blob, { backgroundColor: theme.lunch, bottom: -100, right: -120, width: 620, height: 620, opacity: theme.mode === 'dark' ? 0.14 : 0.16 }]} />
-        <View style={[styles.blob, { backgroundColor: theme.dinner, top: '38%', left: '28%', width: 520, height: 520, opacity: theme.mode === 'dark' ? 0.08 : 0.08 }]} />
+        <View style={[styles.blob, { backgroundColor: theme.primary, top: -250, left: -150, width: 800, height: 800, opacity: theme.mode === 'dark' ? 0.12 : 0.10 }]} />
+        <View style={[styles.blob, { backgroundColor: theme.lunch, bottom: -150, right: -150, width: 700, height: 700, opacity: theme.mode === 'dark' ? 0.08 : 0.08 }]} />
+        <View style={[styles.blob, { backgroundColor: theme.dinner, top: '40%', left: '30%', width: 600, height: 600, opacity: theme.mode === 'dark' ? 0.05 : 0.04 }]} />
       </View>
 
       <SafeAreaView style={styles.safe} edges={['top']}>

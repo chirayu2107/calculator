@@ -27,7 +27,7 @@ const Card = ({ label, value, sublabel, icon, accent, theme, emphasis, compact }
           <View style={[styles.accentDot, { backgroundColor: accent }]} />
         ) : null}
         <Text
-          style={[labelStyle, { color: theme.textMuted, fontFamily: theme.font }]}
+          style={[labelStyle, { color: theme.text, fontFamily: theme.font, opacity: 0.8 }]}
           numberOfLines={1}
         >
           {label}
@@ -45,7 +45,7 @@ const Card = ({ label, value, sublabel, icon, accent, theme, emphasis, compact }
         </Text>
       </View>
       <Text
-        style={[sublabelStyle, { color: theme.textSubtle, fontFamily: theme.font }]}
+        style={[sublabelStyle, { color: theme.text, fontFamily: theme.font, opacity: 0.6 }]}
         numberOfLines={1}
       >
         {sublabel}
