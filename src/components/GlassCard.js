@@ -25,7 +25,7 @@ export const GlassCard = ({
 }) => {
   const isDark = theme.mode === 'dark';
   const isWeb = Platform.OS === 'web';
-  const blurIntensity = intensity ?? (tinted || accentColor ? 35 : 25);
+  const blurIntensity = intensity ?? (tinted || accentColor ? 25 : 15);
 
   // When an accent color is given, the gradient tint is the accent color at
   // low opacity — that's what gives the iOS "tinted glass" / colored bubble

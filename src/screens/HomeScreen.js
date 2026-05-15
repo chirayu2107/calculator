@@ -77,9 +77,9 @@ export const HomeScreen = ({ theme }) => {
   return (
     <View style={[styles.root, { backgroundColor: theme.bg }]}>
       <View style={[styles.blobContainer, { pointerEvents: 'none' }]}>
-        <View style={[styles.blob, { backgroundColor: theme.primary, top: -250, left: -150, width: 800, height: 800, opacity: theme.mode === 'dark' ? 0.12 : 0.10 }]} />
-        <View style={[styles.blob, { backgroundColor: theme.lunch, bottom: -150, right: -150, width: 700, height: 700, opacity: theme.mode === 'dark' ? 0.08 : 0.08 }]} />
-        <View style={[styles.blob, { backgroundColor: theme.dinner, top: '40%', left: '30%', width: 600, height: 600, opacity: theme.mode === 'dark' ? 0.05 : 0.04 }]} />
+        <View style={[styles.blob, { backgroundColor: theme.primary, top: -200, left: -150, width: 700, height: 700, opacity: 0.05 }]} />
+        <View style={[styles.blob, { backgroundColor: theme.lunch, bottom: -150, right: -150, width: 700, height: 700, opacity: 0.08 }]} />
+        <View style={[styles.blob, { backgroundColor: theme.dinner, top: '40%', left: '30%', width: 600, height: 600, opacity: 0.04 }]} />
       </View>
 
       <SafeAreaView style={styles.safe} edges={['top']}>
@@ -294,7 +294,7 @@ const LegendItem = ({ color, label, icon, theme }) => (
 const styles = StyleSheet.create({
   root: { flex: 1 },
   blobContainer: { ...StyleSheet.absoluteFillObject, overflow: 'hidden', zIndex: -1 },
-  blob: { position: 'absolute', width: 600, height: 600, borderRadius: 9999, filter: 'blur(140px)' },
+  blob: { position: 'absolute', width: 600, height: 600, borderRadius: 9999, filter: 'blur(80px)' },
   safe: { flex: 1 },
   toolbarContainer: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4, zIndex: 10 },
   toolbar: {
@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
-  summaryWrap: { marginBottom: 12 }, // Tightened
+  summaryWrap: { marginBottom: 12, zIndex: 5 }, // Added zIndex
   emptyWrap: { padding: 40, alignItems: 'center', justifyContent: 'center', minHeight: 240 },
   emptyTitle: { fontSize: 18, fontWeight: '700', marginBottom: 8, textAlign: 'center' },
   emptySubtitle: { fontSize: 14, textAlign: 'center', maxWidth: 280, lineHeight: 20 },
