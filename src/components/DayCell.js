@@ -27,7 +27,6 @@ export const DayCell = ({
         {
           backgroundColor: active ? color : 'transparent',
           borderColor: active ? color : theme.borderStrong,
-          ...(active && { boxShadow: `0 0 6px ${color}` }),
         },
       ]}
     />
@@ -36,7 +35,7 @@ export const DayCell = ({
   if (compact) {
     return (
       <View style={[styles.slot, styles.slotCompact]}>
-        <Pressable onPress={onPress}>
+        <Pressable onPress={onPress} delayPressIn={0} hitSlop={4}>
           {({ pressed, hovered }) => (
             <GlassCard
               theme={theme}

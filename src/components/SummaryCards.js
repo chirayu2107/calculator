@@ -24,7 +24,7 @@ const Card = ({ label, value, sublabel, icon, accent, theme, emphasis, compact }
       <View style={styles.headerRow}>
         {icon ? <Text style={[styles.icon, compact && styles.iconCompact]}>{icon}</Text> : null}
         {accent ? (
-          <View style={[styles.accentDot, { backgroundColor: accent, boxShadow: `0 0 6px ${accent}` }]} />
+          <View style={[styles.accentDot, { backgroundColor: accent }]} />
         ) : null}
         <Text
           style={[labelStyle, { color: theme.textMuted, fontFamily: theme.font }]}
@@ -84,13 +84,18 @@ export const SummaryCards = ({ summary, monthName, theme, compact }) => {
 
   if (compact) {
     return (
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollCompact}
-      >
-        {cards}
-      </ScrollView>
+      <View style={styles.scrollWrapper}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.scrollCompact}
+          decelerationRate="fast"
+          snapToInterval={154} // 144 + 10 gap
+          snapToAlignment="start"
+        >
+          {cards}
+        </ScrollView>
+      </View>
     );
   }
 
@@ -103,11 +108,15 @@ const styles = StyleSheet.create({
     gap: 12,
     flexWrap: 'wrap',
   },
+  scrollWrapper: {
+    marginHorizontal: -16, // Offset parent padding (16px) to bleed to edges
+    overflow: 'visible',   // Ensure shadows aren't clipped by wrapper
+  },
   scrollCompact: {
     flexDirection: 'row',
     gap: 10,
-    paddingHorizontal: 4,
-    paddingVertical: 2,
+    paddingHorizontal: 16, // Restore padding inside the scroll content
+    paddingVertical: 14,    // Extra vertical room for large shadows (32px)
   },
   card: {
     flex: 1,

@@ -4,13 +4,13 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 export const DayPill = ({ label, color, softColor, active, onPress, theme, compact }) => (
   <Pressable
     onPress={onPress}
+    delayPressIn={0}
     style={({ pressed, hovered }) => [
       styles.pill,
       compact && styles.pillCompact,
       {
         backgroundColor: active ? color : 'rgba(255,255,255,0.05)',
         borderColor: active ? color : theme.border,
-        ...(active && { boxShadow: `0 4px 12px ${color}40` }),
       },
       pressed && { transform: [{ scale: 0.95 }] },
       hovered && !active && { backgroundColor: 'rgba(255,255,255,0.1)' },

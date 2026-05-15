@@ -46,18 +46,6 @@ export const GlassCard = ({
           borderWidth: noBorder ? 0 : StyleSheet.hairlineWidth,
           borderColor: noBorder ? 'transparent' : (borderColor ?? theme.glassBorder),
         },
-        !noShadow && {
-          shadowColor: isDark ? '#000' : '#0F172A',
-          shadowOpacity: isDark ? 0.45 : 0.10,
-          shadowOffset: { width: 0, height: 14 },
-          shadowRadius: 32,
-          elevation: 8,
-          ...(isWeb && {
-            boxShadow: isDark
-              ? '0 18px 50px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.3)'
-              : '0 18px 50px rgba(15,23,42,0.10), 0 1px 2px rgba(15,23,42,0.05)',
-          }),
-        },
         style,
       ]}
     >

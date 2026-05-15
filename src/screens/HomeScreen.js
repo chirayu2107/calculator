@@ -267,13 +267,14 @@ export const HomeScreen = ({ theme }) => {
 const ToolBtn = ({ children, onPress, theme, wide }) => (
   <Pressable
     onPress={onPress}
-    hitSlop={8}
+    hitSlop={12}
+    delayPressIn={0}
     style={({ pressed, hovered }) => [
       styles.toolBtn,
       wide && styles.toolBtnWide,
       { backgroundColor: theme.surfaceAlt, borderColor: theme.border },
       hovered && { backgroundColor: theme.surfaceHover, transform: [{ scale: 1.05 }] },
-      pressed && { transform: [{ scale: 0.95 }] },
+      pressed && { transform: [{ scale: 0.92 }], opacity: 0.8 },
     ]}
   >
     <Text style={[styles.toolBtnText, { color: theme.text, fontFamily: theme.font }]}>{children}</Text>
@@ -282,7 +283,7 @@ const ToolBtn = ({ children, onPress, theme, wide }) => (
 
 const LegendItem = ({ color, label, icon, theme }) => (
   <View style={styles.legendItem}>
-    <View style={[styles.legendDot, { backgroundColor: color, boxShadow: `0 0 8px ${color}` }]} />
+    <View style={[styles.legendDot, { backgroundColor: color }]} />
     {icon ? <Text style={styles.legendIcon}>{icon}</Text> : null}
     <Text style={[styles.legendText, { color: theme.textMuted, fontFamily: theme.font }]} numberOfLines={1}>
       {label}
@@ -304,7 +305,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderRadius: 24,
     borderWidth: 1,
-    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
   },
   toolbarLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   toolbarRight: { flexDirection: 'row', alignItems: 'center', gap: 2 },
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 10, // Tightened
     paddingHorizontal: 8,
     flexWrap: 'wrap',
     gap: 8,
@@ -347,14 +347,13 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 20,
     borderWidth: 1,
-    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
   },
   todayPillText: { fontSize: 12, fontWeight: '700' },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   legendDot: { width: 10, height: 10, borderRadius: 5 },
   legendIcon: { fontSize: 12 },
   legendText: { fontSize: 12, fontWeight: '600', maxWidth: 110 },
-  weekRow: { flexDirection: 'row', paddingHorizontal: 4, marginBottom: 8 },
+  weekRow: { flexDirection: 'row', paddingHorizontal: 4, marginBottom: 4 }, // Tightened
   weekday: {
     flex: 1,
     textAlign: 'center',
@@ -365,7 +364,7 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
-  summaryWrap: { marginBottom: 20 },
+  summaryWrap: { marginBottom: 12 }, // Tightened
   emptyWrap: { padding: 40, alignItems: 'center', justifyContent: 'center', minHeight: 240 },
   emptyTitle: { fontSize: 18, fontWeight: '700', marginBottom: 8, textAlign: 'center' },
   emptySubtitle: { fontSize: 14, textAlign: 'center', maxWidth: 280, lineHeight: 20 },

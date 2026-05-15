@@ -14,7 +14,9 @@ export const StaffPicker = ({
       <View style={styles.row}>
         <Pressable
           onPress={onManage}
-          style={({ pressed }) => [pressed && { transform: [{ scale: 0.97 }] }]}
+          hitSlop={8}
+          delayPressIn={0}
+          style={({ pressed }) => [pressed && { transform: [{ scale: 0.96 }] }]}
         >
           <GlassCard theme={theme} radius={20} style={styles.addPill}>
             <Text style={[styles.addPillText, { color: theme.text, fontFamily: theme.font }]}>
@@ -32,6 +34,7 @@ export const StaffPicker = ({
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scroll}
+        decelerationRate="fast"
       >
         {staffList.map((s) => {
           const active = s.id === activeStaffId;
@@ -39,7 +42,8 @@ export const StaffPicker = ({
             <Pressable
               key={s.id}
               onPress={() => onSelect(s.id)}
-              style={({ pressed }) => [pressed && { transform: [{ scale: 0.97 }] }]}
+              delayPressIn={0}
+              style={({ pressed }) => [pressed && { transform: [{ scale: 0.96 }] }]}
             >
               <GlassCard
                 theme={theme}
@@ -50,7 +54,6 @@ export const StaffPicker = ({
                   styles.pill,
                   active && {
                     borderWidth: 1.5,
-                    shadowColor: s.color,
                   },
                 ]}
               >
@@ -71,8 +74,9 @@ export const StaffPicker = ({
 
         <Pressable
           onPress={onManage}
-          style={({ pressed }) => [pressed && { transform: [{ scale: 0.97 }] }]}
-          hitSlop={4}
+          delayPressIn={0}
+          style={({ pressed }) => [pressed && { transform: [{ scale: 0.96 }] }]}
+          hitSlop={8}
         >
           <GlassCard theme={theme} radius={20} style={styles.managePill}>
             <Text style={[styles.managePillText, { color: theme.textMuted, fontFamily: theme.font }]}>
@@ -86,8 +90,8 @@ export const StaffPicker = ({
 };
 
 const styles = StyleSheet.create({
-  row: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 6 },
-  scroll: { gap: 8, paddingRight: 16, paddingLeft: 1, alignItems: 'center' },
+  row: { paddingTop: 10, paddingBottom: 6 },
+  scroll: { gap: 8, paddingHorizontal: 16, alignItems: 'center' },
   pill: {
     paddingHorizontal: 18,
     paddingVertical: 9,
