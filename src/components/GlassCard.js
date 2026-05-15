@@ -51,10 +51,15 @@ export const GlassCard = ({
       ]}
     >
       {/* 1 — Blur backdrop */}
-      <BlurView
-        intensity={blurIntensity}
-        tint={isDark ? 'dark' : 'light'}
-        style={[StyleSheet.absoluteFillObject, { borderRadius: radius }]}
+      {/* Temporarily disabling BlurView to diagnose visibility issues */}
+      <View
+        style={[
+          StyleSheet.absoluteFillObject,
+          {
+            borderRadius: radius,
+            backgroundColor: isDark ? 'rgba(30, 41, 59, 0.7)' : 'rgba(255, 255, 255, 0.8)',
+          }
+        ]}
       />
 
       {/* 2 — Gradient tint */}
