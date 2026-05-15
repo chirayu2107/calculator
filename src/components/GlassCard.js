@@ -42,9 +42,10 @@ export const GlassCard = ({
       style={[
         {
           borderRadius: radius,
-          overflow: 'hidden',
           borderWidth: noBorder ? 0 : StyleSheet.hairlineWidth,
           borderColor: noBorder ? 'transparent' : (borderColor ?? theme.glassBorder),
+          // Removing overflow: 'hidden' here as it often causes 
+          // backdrop-filter bugs on iOS Safari
         },
         style,
       ]}
@@ -53,7 +54,7 @@ export const GlassCard = ({
       <BlurView
         intensity={blurIntensity}
         tint={isDark ? 'dark' : 'light'}
-        style={StyleSheet.absoluteFillObject}
+        style={[StyleSheet.absoluteFillObject, { borderRadius: radius }]}
       />
 
       {/* 2 — Gradient tint */}
@@ -61,7 +62,7 @@ export const GlassCard = ({
         colors={[tintTop, tintBottom]}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
-        style={StyleSheet.absoluteFillObject}
+        style={[StyleSheet.absoluteFillObject, { borderRadius: radius }]}
         pointerEvents="none"
       />
 
