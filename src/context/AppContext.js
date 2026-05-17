@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState, useCallback, useRef } from 'react';
+import { Platform } from 'react-native';
 import {
   loadLocalHousehold,
   saveLocalHousehold,
@@ -136,6 +137,22 @@ export const AppProvider = ({ children }) => {
               setUserData(ud);
               saveLocalHousehold(hid, ud);
               setSyncStatus('synced');
+              
+              // Family Sync Notification
+              if (Platform.OS !== 'web') {
+                import('../utils/notifications').then(({ Notifications }) => {
+                  if (h && h.updatedBy && user && h.updatedBy !== user.uid) {
+                    Notifications.scheduleNotificationAsync({
+                      content: {
+                        title: 'Attendance Updated',
+                        body: 'A family member just updated the staff attendance.',
+                        sound: true,
+                      },
+                      trigger: null, // immediate
+                    }).catch(() => {});
+                  }
+                }).catch(() => {});
+              }
             },
             () => setSyncStatus('error')
           );
@@ -273,10 +290,11 @@ export const AppProvider = ({ children }) => {
 
   // ---------- Staff CRUD ----------
   const addStaff = useCallback(
-    (name) => {
+    (name, role = 'Other', icon = '👤', color = null) => {
       const trimmed = (name || '').trim();
       if (!trimmed) return null;
-      const staff = makeStaff(trimmed, pickStaffColor(userData.staffList));
+      const staffColor = color || pickStaffColor(userData.staffList);
+      const staff = makeStaff(trimmed, staffColor, role, icon);
       const nextList = [...userData.staffList, staff];
       const nextStaffData = { ...userData.staffData, [staff.id]: makeStaffData() };
       const next = {

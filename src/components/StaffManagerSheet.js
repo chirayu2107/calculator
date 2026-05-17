@@ -54,6 +54,7 @@ const StaffRow = ({ staff, isActive, theme, onRename, onDelete, onSelect, canDel
         />
       ) : (
         <Pressable style={styles.nameWrap} onPress={() => onSelect(staff.id)}>
+          <Text style={{ fontSize: 16 }}>{staff.icon || '👤'}</Text>
           <Text style={[styles.name, { color: theme.text, fontFamily: theme.font }]} numberOfLines={1}>
             {staff.name}
           </Text>
@@ -90,6 +91,14 @@ const StaffRow = ({ staff, isActive, theme, onRename, onDelete, onSelect, canDel
   );
 };
 
+const ROLES = [
+  { id: 'Maid', icon: '🧹', color: '#3B82F6' },
+  { id: 'Cook', icon: '🍳', color: '#F59E0B' },
+  { id: 'Driver', icon: '🚗', color: '#10B981' },
+  { id: 'Nanny', icon: '🍼', color: '#EC4899' },
+  { id: 'Other', icon: '👤', color: '#8B5CF6' },
+];
+
 export const StaffManagerSheet = ({
   visible,
   theme,
@@ -103,12 +112,14 @@ export const StaffManagerSheet = ({
 }) => {
   const { isCompact } = useBreakpoint();
   const [newName, setNewName] = useState('');
+  const [selectedRole, setSelectedRole] = useState(ROLES[0]);
   const fontFamily = theme.font;
 
   const submitNew = () => {
     if (!newName.trim()) return;
-    onAdd(newName.trim());
+    onAdd(newName.trim(), selectedRole.id, selectedRole.icon, selectedRole.color);
     setNewName('');
+    setSelectedRole(ROLES[0]);
   };
 
   const sheetStyle = isCompact ? styles.bottomSheet : styles.sidePanel;
@@ -144,30 +155,47 @@ export const StaffManagerSheet = ({
           </View>
 
           <ScrollView contentContainerStyle={styles.scroll}>
-            <View style={styles.addRow}>
-              <TextInput
-                style={[
-                  styles.addInput,
-                  { color: theme.text, fontFamily, backgroundColor: theme.surfaceAlt, borderColor: theme.border },
-                ]}
-                placeholder="Add staff member (e.g. Cook, Driver)"
-                placeholderTextColor={theme.textSubtle}
-                value={newName}
-                onChangeText={setNewName}
-                onSubmitEditing={submitNew}
-                returnKeyType="done"
-                maxLength={32}
-              />
-              <Pressable
-                onPress={submitNew}
-                style={({ pressed }) => [
-                  styles.addBtn,
-                  { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
-                ]}
-                disabled={!newName.trim()}
-              >
-                <Text style={styles.addBtnText}>Add</Text>
-              </Pressable>
+            <View style={styles.addSection}>
+              <View style={styles.rolePicker}>
+                {ROLES.map((r) => (
+                  <Pressable
+                    key={r.id}
+                    onPress={() => setSelectedRole(r)}
+                    style={[
+                      styles.roleBtn,
+                      { borderColor: selectedRole.id === r.id ? r.color : theme.border },
+                      selectedRole.id === r.id && { backgroundColor: r.color + '22' }
+                    ]}
+                  >
+                    <Text style={styles.roleIcon}>{r.icon}</Text>
+                  </Pressable>
+                ))}
+              </View>
+              <View style={styles.addRow}>
+                <TextInput
+                  style={[
+                    styles.addInput,
+                    { color: theme.text, fontFamily, backgroundColor: theme.surfaceAlt, borderColor: theme.border },
+                  ]}
+                  placeholder={`Add ${selectedRole.id} name`}
+                  placeholderTextColor={theme.textSubtle}
+                  value={newName}
+                  onChangeText={setNewName}
+                  onSubmitEditing={submitNew}
+                  returnKeyType="done"
+                  maxLength={32}
+                />
+                <Pressable
+                  onPress={submitNew}
+                  style={({ pressed }) => [
+                    styles.addBtn,
+                    { backgroundColor: theme.primary, opacity: pressed ? 0.8 : 1 },
+                  ]}
+                  disabled={!newName.trim()}
+                >
+                  <Text style={styles.addBtnText}>Add</Text>
+                </Pressable>
+              </View>
             </View>
 
             <View style={{ height: 16 }} />
@@ -232,6 +260,10 @@ const styles = StyleSheet.create({
   title: { fontSize: 15, fontWeight: '700' },
   close: { fontSize: 16, fontWeight: '500' },
   scroll: { padding: 16, gap: 8 },
+  addSection: { gap: 12, marginBottom: 8 },
+  rolePicker: { flexDirection: 'row', gap: 8, justifyContent: 'space-between' },
+  roleBtn: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 8, borderRadius: 8, borderWidth: 1 },
+  roleIcon: { fontSize: 20 },
   addRow: { flexDirection: 'row', gap: 8 },
   addInput: { flex: 1, height: 44, borderRadius: 10, paddingHorizontal: 12, fontSize: 14, borderWidth: 1 },
   addBtn: { paddingHorizontal: 16, height: 44, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },

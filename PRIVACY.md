@@ -1,8 +1,8 @@
-# Privacy Policy — Maid Tracker
+# Privacy Policy — HomeStaff
 
 _Last updated: 15 May 2026_
 
-This Privacy Policy describes how Maid Tracker ("the App", "we", "our") handles your information when you use our mobile application.
+This Privacy Policy describes how HomeStaff ("the App", "we", "our") handles your information when you use our mobile application.
 
 ## 1. Information we collect
 
@@ -57,7 +57,7 @@ If you cannot access the app and want your data deleted, email us at the contact
 
 ## 5. Children
 
-Maid Tracker is not directed at children under 13. We do not knowingly collect data from children. If you believe a child has created an account, contact us and we will delete it.
+HomeStaff is not directed at children under 13. We do not knowingly collect data from children. If you believe a child has created an account, contact us and we will delete it.
 
 ## 6. Security
 

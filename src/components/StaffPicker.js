@@ -65,7 +65,7 @@ export const StaffPicker = ({
                   ]}
                   numberOfLines={1}
                 >
-                  {s.name}
+                  {s.icon ? `${s.icon} ` : ''}{s.name}
                 </Text>
               </GlassCard>
             </Pressable>

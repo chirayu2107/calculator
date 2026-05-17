@@ -75,12 +75,14 @@ export const FamilySheet = ({
 
   const shareCode = async () => {
     if (!inviteCode) return;
-    const message = `Join my Maid Tracker family — enter code ${inviteCode}`;
+    const message = `👋 You've been invited to join my household on HomeStaff!\n\nUse this code to connect and track attendance together:\n👉 Code: ${inviteCode}\n\nJoin here: https://maid-calculator.vercel.app/`;
     try {
+      const url = 'https://maid-calculator.vercel.app/';
+      const title = 'HomeStaff';
       if (Platform.OS === 'web' && navigator.share) {
-        await navigator.share({ text: message });
+        await navigator.share({ title, text: message, url });
       } else if (Platform.OS !== 'web') {
-        await Share.share({ message });
+        await Share.share({ title, message, url });
       } else {
         await copyCode();
       }

@@ -48,10 +48,12 @@ export const RATE_TYPES = {
 export const newStaffId = () => `staff_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 export const newCategoryId = () => `cat_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
-export const makeStaff = (name, color = STAFF_COLORS[0]) => ({
+export const makeStaff = (name, color = STAFF_COLORS[0], role = 'Other', icon = '👤') => ({
   id: newStaffId(),
   name: name || 'Staff',
   color,
+  role,
+  icon,
   archived: false,
 });
 
@@ -95,7 +97,7 @@ export const emptyUserData = () => ({
 });
 
 export const seedFirstStaff = (name = 'My Staff') => {
-  const staff = makeStaff(name, STAFF_COLORS[0]);
+  const staff = makeStaff(name, STAFF_COLORS[0], 'Maid', '🧹');
   return {
     staffList: [staff],
     staffData: { [staff.id]: makeStaffData() },

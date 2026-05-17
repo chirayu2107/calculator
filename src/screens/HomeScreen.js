@@ -9,6 +9,7 @@ import { SettingsSheet } from '../components/SettingsSheet';
 import { StaffPicker } from '../components/StaffPicker';
 import { StaffManagerSheet } from '../components/StaffManagerSheet';
 import { FamilySheet } from '../components/FamilySheet';
+import { OnboardingModal } from '../components/OnboardingModal';
 import { buildMonthGrid, dateKey, monthLabel, shiftMonth, todayKey } from '../utils/date';
 import { computeMonthSummary } from '../utils/summary';
 import { useBreakpoint } from '../utils/responsive';
@@ -55,6 +56,17 @@ export const HomeScreen = ({ theme }) => {
   const [familySheetOpen, setFamilySheetOpen] = useState(false);
   const [selectedKey, setSelectedKey] = useState(null);
 
+  React.useEffect(() => {
+    // We only import dynamically to not break web builds if notifications fails
+    import('../utils/notifications').then(({ scheduleDailyReminder }) => {
+      scheduleDailyReminder();
+    }).catch(() => {});
+
+    import('../utils/rating').then(({ checkAndPromptRating }) => {
+      checkAndPromptRating();
+    }).catch(() => {});
+  }, []);
+
   const totalAttendanceDays = useMemo(() => {
     let count = 0;
     for (const sd of Object.values(activeStaff ? { [activeStaff.id]: { attendance } } : {})) {
@@ -86,7 +98,7 @@ export const HomeScreen = ({ theme }) => {
             <View style={styles.toolbarLeft}>
               {!isCompact && (
                 <>
-                  <Text style={[styles.appTitle, { color: theme.text, fontFamily }]}>Maid Tracker</Text>
+                  <Text style={[styles.appTitle, { color: theme.text, fontFamily }]}>HomeStaff</Text>
                   <View style={[styles.toolDivider, { backgroundColor: theme.border }]} />
                 </>
               )}
@@ -258,6 +270,8 @@ export const HomeScreen = ({ theme }) => {
         onToggle={(catId) => selectedKey && toggle(selectedKey, catId)}
         onClose={() => setSelectedKey(null)}
       />
+
+      <OnboardingModal theme={theme} />
     </View>
   );
 };

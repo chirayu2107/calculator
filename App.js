@@ -1,5 +1,9 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, useColorScheme, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, useColorScheme, View, Platform } from 'react-native';
+
+if (Platform.OS === 'web' && typeof document !== 'undefined') {
+  document.title = 'HomeStaff';
+}
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider, useApp } from './src/context/AppContext';

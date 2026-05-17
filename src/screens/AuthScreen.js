@@ -106,7 +106,7 @@ export const AuthScreen = ({ theme }) => {
         <View style={styles.content}>
           <View style={styles.header}>
             <Image source={APP_ICON} style={styles.logo} resizeMode="contain" />
-            <Text style={[styles.title, { color: theme.text, fontFamily }]}>Maid Tracker</Text>
+            <Text style={[styles.title, { color: theme.text, fontFamily }]}>HomeStaff</Text>
             <Text style={[styles.subtitle, { color: theme.textMuted, fontFamily }]}>
               {isSignup
                 ? 'Create an account to sync across devices'

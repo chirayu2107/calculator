@@ -1,4 +1,4 @@
-# Maid Tracker
+# HomeStaff
 
 Track monthly attendance and calculate payment for household staff (maid, cook, driver, etc.). Multi-staff, cloud-synced, light/dark mode, works offline.
 
@@ -150,11 +150,11 @@ This produces an `.aab` (Android App Bundle) — required for Play Store.
 
 1. Create a Google Play Console account ($25 one-time): https://play.google.com/console
 2. Create a new app → fill in:
-   - Title: **Maid Tracker**
+   - Title: **HomeStaff**
    - Short description (80 chars): *Track house staff attendance and calculate monthly payment.*
    - Full description (4000 chars): adapt the Features section above
    - Category: **Productivity** or **Lifestyle**
-   - Content rating: take the questionnaire — Maid Tracker has no objectionable content
+   - Content rating: take the questionnaire — HomeStaff has no objectionable content
    - Target audience: 13+
 3. **App content → Privacy policy** → paste your hosted URL
 4. **App content → Data safety** → fill in honestly:
