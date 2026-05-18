@@ -127,6 +127,31 @@ export const AppProvider = ({ children }) => {
           if (cached) setUserData(cached);
         }
 
+        // 5.5 Auto-join if opened via invite link
+        if (Platform.OS === 'web' && typeof window !== 'undefined') {
+          try {
+            const params = new URLSearchParams(window.location.search);
+            const code = params.get('code');
+            if (code) {
+              const joinRes = await firebaseService.joinHouseholdByCode({
+                uid: user.uid,
+                email: user.email,
+                code,
+                previousHouseholdId: hid,
+              });
+              if (joinRes && !joinRes.error) {
+                if (hid) clearLocalHousehold(hid);
+                hid = joinRes.householdId;
+                await setLastHouseholdId(hid);
+              }
+              // Clean URL
+              window.history.replaceState({}, document.title, window.location.pathname);
+            }
+          } catch (err) {
+            logger.error('[AppContext] failed to process invite code from URL', err);
+          }
+        }
+
         // 6. Subscribe to the household doc.
         if (hid) {
           unsubscribeRef.current = firebaseService.subscribeToHousehold(

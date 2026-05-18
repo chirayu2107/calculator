@@ -77,7 +77,7 @@ export const FamilySheet = ({
     if (!inviteCode) return;
     const message = `👋 You've been invited to join my household on HomeStaff!\n\nUse this code to connect and track attendance together:\n👉 Code: ${inviteCode}`;
     try {
-      const url = 'https://homestaff.vercel.app/';
+      const url = `https://homestaff.vercel.app/?code=${inviteCode}`;
       const title = 'HomeStaff';
       if (Platform.OS === 'web' && navigator.share) {
         await navigator.share({ title, text: message, url });
