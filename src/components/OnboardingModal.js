@@ -36,9 +36,25 @@ export const OnboardingModal = ({ theme }) => {
   useEffect(() => {
     const checkOnboarding = async () => {
       try {
-        const onboarded = await AsyncStorage.getItem(ONBOARDING_KEY);
-        if (onboarded !== 'true') {
+        const legacyOnboarded = await AsyncStorage.getItem(ONBOARDING_KEY);
+        const firstTimeDate = await AsyncStorage.getItem('@maidtracker:onboarding_first');
+        const secondTimeShown = await AsyncStorage.getItem('@maidtracker:onboarding_second');
+        
+        if (legacyOnboarded === 'true' && !firstTimeDate) {
+          // Migrate legacy user so they don't see it again
+          await AsyncStorage.setItem('@maidtracker:onboarding_first', (Date.now() - (3 * 24 * 60 * 60 * 1000)).toString());
+          await AsyncStorage.setItem('@maidtracker:onboarding_second', 'true');
+          return;
+        }
+
+        if (!firstTimeDate) {
           setVisible(true);
+        } else if (!secondTimeShown) {
+          const firstDate = parseInt(firstTimeDate, 10);
+          const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
+          if (Date.now() - firstDate >= TWO_DAYS_MS) {
+            setVisible(true);
+          }
         }
       } catch (e) {}
     };
@@ -55,7 +71,13 @@ export const OnboardingModal = ({ theme }) => {
 
   const finishOnboarding = async () => {
     try {
-      await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
+      const firstTimeDate = await AsyncStorage.getItem('@maidtracker:onboarding_first');
+      if (!firstTimeDate) {
+        await AsyncStorage.setItem('@maidtracker:onboarding_first', Date.now().toString());
+        await AsyncStorage.setItem(ONBOARDING_KEY, 'true'); // For backward compatibility
+      } else {
+        await AsyncStorage.setItem('@maidtracker:onboarding_second', 'true');
+      }
     } catch (e) {}
     setVisible(false);
   };
