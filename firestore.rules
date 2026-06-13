@@ -8,10 +8,20 @@ service cloud.firestore {
     }
 
     function isSelfRemovalOnly() {
-      // True if the only members-map change is removing the requester's own uid.
-      return changedKeys().hasOnly(['members'])
+      // True if the only changes are members map (removing self) and optionally updatedAt.
+      return (changedKeys().hasOnly(['members']) || changedKeys().hasOnly(['members', 'updatedAt']))
         && resource.data.members[request.auth.uid] != null
         && !(request.auth.uid in request.resource.data.members);
+    }
+
+    function isJoining(hid) {
+      // The update only adds the user's uid to the members map
+      // and doesn't change other fields except members and updatedAt.
+      return (changedKeys().hasOnly(['members']) || changedKeys().hasOnly(['members', 'updatedAt']))
+        && !(request.auth.uid in resource.data.members)
+        && request.resource.data.members[request.auth.uid] != null
+        && request.resource.data.members[request.auth.uid].role == 'member'
+        && get(/databases/$(database)/documents/household_lookups/$(resource.data.inviteCode)).data.householdId == hid;
     }
 
     // ---- users/{uid} ----
@@ -44,11 +54,15 @@ service cloud.firestore {
       // membership / ownership / invite code; non-owners can only self-remove
       // (leave family).
       allow update: if request.auth != null
-        && resource.data.members[request.auth.uid] != null
         && (
-          !changedKeys().hasAny(['members', 'ownerUid', 'inviteCode'])
-          || resource.data.ownerUid == request.auth.uid
-          || isSelfRemovalOnly()
+          (resource.data.members[request.auth.uid] != null
+            && (
+              !changedKeys().hasAny(['members', 'ownerUid', 'inviteCode'])
+              || resource.data.ownerUid == request.auth.uid
+              || isSelfRemovalOnly()
+            )
+          )
+          || isJoining(hid)
         );
 
       // Delete: only the owner.
